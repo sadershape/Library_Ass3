@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User"); // Assuming you have a User model
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { isAdmin } = require("../middleware/authMiddleware"); // Admin check middleware
 
 // Admin Dashboard
