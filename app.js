@@ -2,9 +2,10 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
-const MongoStore = require("connect-mongo"); // Store sessions in MongoDB
+const MongoStore = require("connect-mongo");
 const connectDB = require("./config/db");
 const path = require("path");
+const expressLayouts = require("express-ejs-layouts"); // Import express-ejs-layouts
 
 const app = express();
 
@@ -14,6 +15,8 @@ connectDB().then(() => console.log("✅ MongoDB Connected")).catch(err => consol
 // Set up EJS as the view engine
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views")); // Ensures views are correctly loaded
+app.use(expressLayouts); // Enable layouts
+app.set("layout", "layout"); // Set default layout
 
 // Middleware
 app.use(express.static("public"));
@@ -26,23 +29,22 @@ app.use(session({
     secret: process.env.SESSION_SECRET || "default_secret",
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, collectionName: "sessions" }), // Store sessions in MongoDB
-    cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 24 } // 1-day session expiry
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, collectionName: "sessions" }),
+    cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 24 }
 }));
 
 // Routes
 app.use("/opengraph", require("./routes/opengraphRoutes"));
-app.use("/books", require("./routes/bookRoutes")); // Ensure books API includes Gutendex
-app.use("/", require("./routes/authRoutes"));
 app.use("/books", require("./routes/bookRoutes"));
+app.use("/", require("./routes/authRoutes"));
 app.use("/weather", require("./routes/weatherRoutes"));
 app.use("/currency", require("./routes/currencyRoutes"));
-app.use("/admin", require("./routes/adminRoutes")); // Added admin panel route
-app.use("/history", require("./routes/historyRoutes")); // Added history route
+app.use("/admin", require("./routes/adminRoutes"));
+app.use("/history", require("./routes/historyRoutes"));
 
 // Default route
 app.get("/", (req, res) => {
-    res.render("index", { user: req.session.user || null }); // Pass user session to EJS
+    res.render("index", { user: req.session.user || null });
 });
 
 // Error handling middleware
