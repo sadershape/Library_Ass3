@@ -1,20 +1,10 @@
-<%- include("navbar") %>
+<% layout('layout') %> 
 
-<h2>Book Search</h2>
-<form action="/books" method="GET">
-    <input type="text" name="q" placeholder="Search for books" required>
-    <button type="submit">Search</button>
-</form>
-
-<ul>
-    <% books.forEach(book => { %>
-    <li>
-        <h3><%= book.volumeInfo.title %></h3>
-        <p>Author: <%= book.volumeInfo.authors ? book.volumeInfo.authors.join(", ") : "Unknown" %></p>
-        <p>Published: <%= book.volumeInfo.publishedDate %></p>
-        <a href="<%= book.volumeInfo.infoLink %>" target="_blank">More Info</a>
-    </li>
-    <% }); %>
-</ul>
-
-<%- include("footer") %>
+<div class="container">
+    <h1>Book Collection</h1>
+    <ul>
+        <% books.forEach(book => { %>
+            <li><%= book.title %> by <%= book.author %></li>
+        <% }) %>
+    </ul>
+</div>
