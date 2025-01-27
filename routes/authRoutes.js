@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/login", (req, res) => {
-    res.render("login");
+    res.render("login", { user: req.session.user || null });
 });
 
 router.post("/login", (req, res) => {
@@ -21,6 +21,10 @@ router.get("/logout", (req, res) => {
     req.session.destroy(() => {
         res.redirect("/");
     });
+});
+
+router.get("/signup", (req, res) => {
+    res.render("signup", { user: req.session.user || null });
 });
 
 module.exports = router;
