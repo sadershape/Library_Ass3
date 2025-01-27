@@ -1,13 +1,21 @@
 const express = require("express");
-const axios = require("axios");
 const router = express.Router();
+const axios = require("axios");
 
-router.get("/", (req, res) => res.render("weather"));
-router.post("/", async (req, res) => {
-    const city = req.body.city;
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${process.env.WEATHER_API_KEY}&units=metric`;
-    const response = await axios.get(url);
-    res.render("weather", { weather: response.data });
+const WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/weather";
+const API_KEY = process.env.OPENWEATHER_API_KEY;
+
+router.get("/", async (req, res) => {
+    try {
+        const city = req.query.city || "London";
+        const response = await axios.get(`${WEATHER_API_URL}?q=${city}&appid=${API_KEY}&units=metric`);
+        const weather = response.data;
+
+        res.render("weather", { weather });
+    } catch (error) {
+        console.error("Error fetching weather:", error);
+        res.status(500).send("Error retrieving weather data");
+    }
 });
 
 module.exports = router;
