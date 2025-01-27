@@ -1,7 +1,21 @@
-<% layout('layout') %> 
+<%- include("navbar") %>
+
+<head>
+    <link rel="stylesheet" href="/styles.css">
+</head>
 
 <div class="container">
-    <h1>Weather Information</h1>
-    <p>Current Weather: <%= weatherData.description %></p>
-    <p>Temperature: <%= weatherData.temperature %>°C</p>
+    <h2>Weather Information</h2>
+    <form action="/weather" method="GET">
+        <input type="text" name="city" placeholder="Enter city name" required>
+        <button type="submit">Get Weather</button>
+    </form>
+
+    <% if (weather) { %>
+        <h3>Weather in <%= weather.city %></h3>
+        <p>Temperature: <%= weather.temp %>°C</p>
+        <p>Condition: <%= weather.description %></p>
+    <% } %>
 </div>
+
+<%- include("footer") %>
