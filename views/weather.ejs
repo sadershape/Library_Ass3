@@ -1,16 +1,7 @@
-<%- include("navbar") %>
+<% layout('layout') %> 
 
-<h2>Weather</h2>
-<form action="/weather" method="POST">
-    <input type="text" name="city" placeholder="Enter city" required>
-    <button type="submit">Check Weather</button>
-</form>
-
-<% if (weather) { %>
-    <h3>Weather in <%= weather.name %></h3>
-    <p>Temperature: <%= weather.main.temp %>°C</p>
-    <p>Humidity: <%= weather.main.humidity %>%</p>
-    <p>Condition: <%= weather.weather[0].description %></p>
-<% } %>
-
-<%- include("footer") %>
+<div class="container">
+    <h1>Weather Information</h1>
+    <p>Current Weather: <%= weatherData.description %></p>
+    <p>Temperature: <%= weatherData.temperature %>°C</p>
+</div>
