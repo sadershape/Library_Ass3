@@ -30,6 +30,8 @@ app.use(session({
 }));
 
 // Routes
+app.use("/opengraph", require("./routes/opengraphRoutes"));
+app.use("/books", require("./routes/bookRoutes")); // Ensure books API includes Gutendex
 app.use("/", require("./routes/authRoutes"));
 app.use("/books", require("./routes/bookRoutes"));
 app.use("/weather", require("./routes/weatherRoutes"));
