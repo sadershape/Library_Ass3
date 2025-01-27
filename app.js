@@ -16,6 +16,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views")); // Ensures views are correctly loaded
 
 // Middleware
+app.use(express.static("public"));
 app.use(express.static(path.join(__dirname, "public"))); // Serve static files
 app.use(express.urlencoded({ extended: true })); // Parse form data
 app.use(express.json()); // Parse JSON requests
