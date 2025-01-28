@@ -12,9 +12,9 @@
     </form>
 
     <% if (weather) { %>
-        <h3>Weather in <%= weather.city %></h3>
-        <p>Temperature: <%= weather.temp %>°C</p>
-        <p>Condition: <%= weather.description %></p>
+        <h3>Weather in <%= weather.name %></h3>
+        <p>Temperature: <%= weather.main.temp %>°C</p>
+        <p>Condition: <%= weather.weather[0].description %></p>
     <% } %>
 </div>
 
