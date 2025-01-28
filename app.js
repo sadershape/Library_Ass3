@@ -3,15 +3,41 @@ const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
-const connectDB = require("./config/db");
 const path = require("path");
+const connectDB = require("./config/db");
+const bcrypt = require("bcryptjs");
+const User = require("./models/User"); // Import User model
 
 const app = express();
 
 // ✅ Connect to MongoDB
 connectDB()
-    .then(() => console.log("✅ MongoDB Connected"))
+    .then(() => {
+        console.log("✅ MongoDB Connected");
+        createAdminUser(); // Ensure admin exists when DB connects
+    })
     .catch(err => console.error("❌ MongoDB Connection Error:", err));
+
+// ✅ Function to Create a Hardcoded Admin User
+const createAdminUser = async () => {
+    try {
+        const existingAdmin = await User.findOne({ username: "admin" });
+        if (!existingAdmin) {
+            const hashedPassword = await bcrypt.hash("admin123", 10); // Change this password for security
+            const adminUser = new User({
+                username: "admin",
+                password: hashedPassword,
+                isAdmin: true
+            });
+            await adminUser.save();
+            console.log("✅ Admin user created: admin/admin123");
+        } else {
+            console.log("⚡ Admin user already exists.");
+        }
+    } catch (error) {
+        console.error("❌ Error creating admin user:", error);
+    }
+};
 
 // ✅ Set up EJS as the view engine
 app.set("view engine", "ejs");
@@ -34,6 +60,12 @@ app.use(session({
     cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 24 }
 }));
 
+// ✅ Pass session user data to views
+app.use((req, res, next) => {
+    res.locals.user = req.session.user || null; // Available in all EJS views
+    next();
+});
+
 // ✅ Load Routes (Ensure These Files Exist)
 try {
     app.use("/", require("./routes/authRoutes")); // Login & Authentication
@@ -49,7 +81,7 @@ try {
 
 // ✅ Default Home Route
 app.get("/", (req, res) => {
-    res.render("index", { user: req.session.user || null });
+    res.render("index", { user: req.session.user });
 });
 
 // ✅ Debugging: Show Full Errors Instead of Generic Message
