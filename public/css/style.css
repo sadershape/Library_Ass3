@@ -1,28 +1,133 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    text-align: center;
-    margin: 0;
-    padding: 0;
+/* === Google Fonts === */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+/* === Root Variables (For easy color changes) === */
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --light-bg: #f8f9fa;
+    --dark-bg: #212529;
+    --text-light: #ffffff;
+    --text-dark: #343a40;
+    --border-radius: 8px;
+    --transition-speed: 0.3s;
 }
 
+/* === Global Styles === */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--light-bg);
+    color: var(--text-dark);
+    transition: background 0.3s, color 0.3s;
+}
+
+/* === Dark Mode === */
+body.dark-mode {
+    background-color: var(--dark-bg);
+    color: var(--text-light);
+}
+
+/* === Container === */
 .container {
-    width: 80%;
-    margin: auto;
+    max-width: 1200px;
+    margin: 20px auto;
     padding: 20px;
 }
 
-nav ul {
-    list-style: none;
-    padding: 0;
+/* === Navbar === */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--primary-color);
+    padding: 15px 20px;
+    border-radius: var(--border-radius);
 }
 
-nav ul li {
-    display: inline;
-    margin: 0 10px;
-}
-
-a {
+.navbar a {
+    color: var(--text-light);
     text-decoration: none;
-    color: #333;
+    font-weight: 600;
+    padding: 10px;
+    transition: color var(--transition-speed);
+}
+
+.navbar a:hover {
+    color: #ffdd57;
+}
+
+/* === Buttons === */
+.btn {
+    display: inline-block;
+    padding: 10px 15px;
+    background: var(--primary-color);
+    color: var(--text-light);
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: bold;
+    cursor: pointer;
+    transition: background var(--transition-speed), transform 0.2s;
+}
+
+.btn:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+}
+
+/* === Forms === */
+form {
+    background: var(--text-light);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+form input, form select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid var(--secondary-color);
+    border-radius: var(--border-radius);
+}
+
+form button {
+    width: 100%;
+    background: var(--primary-color);
+}
+
+/* === Cards (For Books, Weather, etc.) === */
+.card {
+    background: var(--text-light);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* === Footer === */
+.footer {
+    text-align: center;
+    padding: 15px;
+    background: var(--primary-color);
+    color: var(--text-light);
+    border-radius: var(--border-radius);
+    margin-top: 20px;
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .container {
+        padding: 10px;
+    }
 }
