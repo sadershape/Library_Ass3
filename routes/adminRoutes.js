@@ -1,17 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User"); // User model
+const User = require("../models/User");
 const bcrypt = require("bcryptjs");
-const { isAdmin } = require("../middleware/authMiddleware"); // Admin check middleware
+const { isAdmin } = require("../middleware/authMiddleware");
 
 // Admin Dashboard
 router.get("/", isAdmin, async (req, res) => {
     try {
-        const users = await User.find().select("-password"); // Fetch all users (exclude passwords)
-        res.render("admin", { users, success: req.query.success, error: req.query.error });
+        const users = await User.find().select("-password"); // Exclude passwords
+        res.render("admin", { users, success: req.query.success, error: req.query.error, user: req.session.user });
     } catch (error) {
         console.error("Admin Dashboard Error:", error);
-        res.status(500).render("error", { message: "Server Error" });
+        res.status(500).render("error", { message: "Server Error", user: req.session.user });
     }
 });
 
@@ -19,22 +19,17 @@ router.get("/", isAdmin, async (req, res) => {
 router.post("/add", isAdmin, async (req, res) => {
     const { username, password, isAdmin } = req.body;
 
-    // Validate input
     if (!username || !password) {
         return res.redirect("/admin?error=Username and password are required");
     }
 
     try {
-        // Check if the username already exists
         const existingUser = await User.findOne({ username });
         if (existingUser) {
             return res.redirect("/admin?error=Username already exists");
         }
 
-        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Create a new user
         const newUser = new User({ username, password: hashedPassword, isAdmin: isAdmin === "on" });
         await newUser.save();
 
