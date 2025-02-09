@@ -13,20 +13,20 @@
 
     <!-- Add User Form -->
     <h3>Add New User</h3>
-    <form action="/admin/add" method="POST">
+    <form action="/admin/add" method="POST" class="form">
         <div class="form-group">
             <label for="username">Username</label>
-            <input type="text" id="username" name="username" required>
+            <input type="text" id="username" name="username" class="form-control" required>
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
+            <input type="password" id="password" name="password" class="form-control" required>
         </div>
         <div class="form-group">
             <label for="isAdmin">Admin</label>
             <input type="checkbox" id="isAdmin" name="isAdmin">
         </div>
-        <button type="submit" class="btn">Add User</button>
+        <button type="submit" class="btn btn-primary">Add User</button>
     </form>
 
     <!-- User List -->
@@ -53,6 +53,73 @@
             <% }) %>
         </tbody>
     </table>
+
+    <hr>
+
+    <!-- Add Item Form -->
+    <h3>Add New Item</h3>
+    <form action="/admin/items/add" method="POST" class="form">
+        <div class="form-group">
+            <label for="name_en">Item Name (English)</label>
+            <input type="text" id="name_en" name="name_en" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="name_other">Item Name (Other Language)</label>
+            <input type="text" id="name_other" name="name_other" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="description_en">Description (English)</label>
+            <textarea id="description_en" name="description_en" class="form-control" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="description_other">Description (Other Language)</label>
+            <textarea id="description_other" name="description_other" class="form-control" required></textarea>
+        </div>
+        <div class="form-group">
+            <label>Images (Enter 3 Image URLs)</label>
+            <input type="text" name="image1" class="form-control" placeholder="Image 1 URL" required>
+            <input type="text" name="image2" class="form-control" placeholder="Image 2 URL" required>
+            <input type="text" name="image3" class="form-control" placeholder="Image 3 URL" required>
+        </div>
+        <button type="submit" class="btn btn-success">Add Item</button>
+    </form>
+
+    <!-- Item List -->
+    <h3>Manage Items</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Images</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% items.forEach(item => { %>
+                <tr>
+                    <td><%= item.name_en %> / <%= item.name_other %></td>
+                    <td><%= item.description_en %></td>
+                    <td>
+                        <img src="<%= item.images[0] %>" width="50">
+                        <img src="<%= item.images[1] %>" width="50">
+                        <img src="<%= item.images[2] %>" width="50">
+                    </td>
+                    <td>
+                        <!-- Edit Form -->
+                        <form action="/admin/items/edit/<%= item._id %>" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-warning">Edit</button>
+                        </form>
+                        <!-- Delete Form -->
+                        <form action="/admin/items/delete/<%= item._id %>" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+
 </div>
 
 <%- include("footer") %>
