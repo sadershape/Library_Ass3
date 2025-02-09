@@ -7,6 +7,7 @@ const path = require("path");
 const connectDB = require("./config/db");
 const bcrypt = require("bcryptjs");
 const User = require("./models/User"); // Import User model
+const Item = require("./models/Item"); // ✅ Import Item model
 
 const app = express();
 
@@ -79,9 +80,16 @@ try {
     console.error("❌ Route Loading Error:", error);
 }
 
-// ✅ Default Home Route
-app.get("/", (req, res) => {
-    res.render("index", { user: req.session.user });
+// ✅ Fixed Home Route - Fetch Items Before Rendering Index Page
+app.get("/", async (req, res) => {
+    try {
+        const items = await Item.find({ deletedAt: null }); // ✅ Fetch only active items
+        console.log("📌 Items fetched:", items); // Debugging log
+        res.render("index", { user: req.session.user, items }); // ✅ Pass 'items' to index.ejs
+    } catch (error) {
+        console.error("❌ Error fetching items:", error);
+        res.render("index", { user: req.session.user, items: [] }); // ✅ Always pass an array to avoid errors
+    }
 });
 
 // ✅ Debugging: Show Full Errors Instead of Generic Message
