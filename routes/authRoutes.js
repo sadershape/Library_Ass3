@@ -1,60 +1,78 @@
 const express = require("express");
+const bcrypt = require("bcryptjs");
 const router = express.Router();
 const User = require("../models/User"); // Import the User model
 
-// Login routes (existing code)
+// 📌 Login Page Route
 router.get("/login", (req, res) => {
     res.render("login", { user: req.session.user || null });
 });
 
+// 📌 Fixed Login Route (Uses Hashed Passwords & Admin Role)
 router.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
-    // Check if the user is the admin
-    if (username === "admin" && password === "password123") {
-        req.session.user = { name: "Admin", role: "admin" };
-        return res.redirect("/admin");
-    }
+    try {
+        // Find user in database
+        const user = await User.findOne({ username });
+        if (!user) return res.status(401).send("❌ Invalid username or password");
 
-    // Check if the user exists in the database
-    const user = await User.findOne({ username, password });
-    if (user) {
-        req.session.user = { name: username, role: "user" };
-        return res.redirect("/");
-    }
+        // ✅ Compare entered password with stored hashed password
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(401).send("❌ Invalid username or password");
 
-    res.status(401).send("Invalid credentials");
+        // ✅ Save user session with correct role
+        req.session.user = { id: user._id, username: user.username, role: user.role };
+
+        console.log("✅ Login successful:", req.session.user);
+
+        // ✅ Redirect admins to admin panel, users to home
+        if (user.role === "admin") {
+            return res.redirect("/admin");
+        } else {
+            return res.redirect("/");
+        }
+    } catch (error) {
+        console.error("❌ Login error:", error);
+        res.status(500).send("❌ Internal server error");
+    }
 });
 
-// Registration routes
+// 📌 Registration Page Route
 router.get("/register", (req, res) => {
     res.render("register", { user: req.session.user || null });
 });
 
+// 📌 Fixed Registration Route (Uses Hashed Passwords & Supports Roles)
 router.post("/register", async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, role } = req.body;
 
     try {
         // Check if the username already exists
         const existingUser = await User.findOne({ username });
-        if (existingUser) {
-            return res.status(400).send("Username already exists");
-        }
+        if (existingUser) return res.status(400).send("⚠️ Username already exists");
 
-        // Create a new user
-        const newUser = new User({ username, password });
+        // ✅ Hash the password before saving to DB
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // ✅ Ensure role is "admin" only if specified (default is "user")
+        const newUser = new User({ username, password: hashedPassword, role: role || "user" });
         await newUser.save();
 
-        // Log the user in after registration
-        req.session.user = { name: username, role: "user" };
-        res.redirect("/");
+        console.log("✅ New user registered:", newUser);
+
+        // ✅ Log the user in after registration
+        req.session.user = { id: newUser._id, username: newUser.username, role: newUser.role };
+
+        // ✅ Redirect admins to `/admin`, users to `/`
+        res.redirect(newUser.role === "admin" ? "/admin" : "/");
     } catch (error) {
-        console.error("Error registering user:", error);
-        res.status(500).send("Error registering user");
+        console.error("❌ Error registering user:", error);
+        res.status(500).send("❌ Internal server error");
     }
 });
 
-// Logout route (existing code)
+// 📌 Logout Route - Ends Session
 router.get("/logout", (req, res) => {
     req.session.destroy(() => {
         res.redirect("/");
