@@ -1,51 +1,38 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const searchForm = document.getElementById("googleBooksSearchForm");
-    const searchInput = document.getElementById("googleBooksQuery");
-    const resultsContainer = document.getElementById("googleBooksResults");
+<%- include("navbar") %>
 
-    searchForm.addEventListener("submit", async function (e) {
-        e.preventDefault();
+<div class="container text-center">
+    <h2>Google Books Search</h2>
 
-        const query = searchInput.value.trim();
-        if (!query) {
-            resultsContainer.innerHTML = "<p>Please enter a search term.</p>";
-            return;
-        }
+    <!-- Search Form -->
+    <form id="googleBooksSearchForm" action="/books/googlebooks/search" method="GET" class="mb-4">
+        <input type="text" id="googleBooksQuery" name="q" placeholder="Search for books..." required>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
 
-        resultsContainer.innerHTML = "<p>Loading books...</p>";
+    <% if (message) { %>
+        <p><%= message %></p>
+    <% } else { %>
+        <div class="row">
+            <% books.forEach((book) => { %>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <% if (book.cover) { %>
+                            <img src="<%= book.cover %>" alt="<%= book.title %>" class="card-img-top">
+                        <% } else { %>
+                            <img src="https://via.placeholder.com/128x190?text=No+Image" alt="No Image Available" class="card-img-top">
+                        <% } %>
+                        
+                        <div class="card-body">
+                            <h5 class="card-title"><%= book.title %></h5>
+                            <p class="card-text"><strong>Author:</strong> <%= book.author %></p>
+                            <p class="card-text"><strong>Published:</strong> <%= book.publishedDate || "N/A" %></p>
+                            <a href="<%= book.googleBooksUrl %>" target="_blank" class="btn btn-primary">More Info</a>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } %>
+</div>
 
-        try {
-            const response = await fetch(`/books/googlebooks/search?q=${encodeURIComponent(query)}`);
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const books = await response.json();
-
-            resultsContainer.innerHTML = ""; // Clear previous results
-
-            if (!books.length) {
-                resultsContainer.innerHTML = "<p>No books found.</p>";
-                return;
-            }
-
-            books.forEach(book => {
-                const listItem = document.createElement("li");
-
-                listItem.innerHTML = `
-                    <h3>${book.title}</h3>
-                    <p><strong>Author:</strong> ${book.author}</p>
-                    <p><strong>Published:</strong> ${book.publishedDate || "N/A"}</p>
-                    <a href="${book.googleBooksUrl}" target="_blank">More Info</a>
-                    ${book.cover ? `<img src="${book.cover}" width="100">` : ""}
-                `;
-
-                resultsContainer.appendChild(listItem);
-            });
-        } catch (error) {
-            console.error("❌ Error fetching books:", error);
-            resultsContainer.innerHTML = "<p>❌ Error fetching books. Try again later.</p>";
-        }
-    });
-});
+<%- include("footer") %>
