@@ -7,10 +7,10 @@ const GOOGLE_BOOKS_API_KEY = process.env.GOOGLE_BOOKS_API_KEY;
 router.get("/search", async (req, res) => {
     try {
         console.log("📌 Google Books Route Hit");
-        console.log("📌 API Key Found:", !!GOOGLE_BOOKS_API_KEY);
 
         if (!GOOGLE_BOOKS_API_KEY) {
-            return res.status(500).render("error", { message: "Missing Google Books API Key. Check your .env file." });
+            console.error("❌ ERROR: Missing Google Books API Key!");
+            return res.status(500).render("error", { message: "Missing Google Books API Key. Please check your .env file." });
         }
 
         const query = req.query.q || "fiction";
@@ -43,7 +43,7 @@ router.get("/search", async (req, res) => {
         console.error("❌ Google Books API Error:", error.message);
         
         if (error.response) {
-            console.error("❌ Error Response Data:", error.response.data);
+            console.error("❌ Error Response Data:", JSON.stringify(error.response.data, null, 2));
         }
 
         res.status(500).render("error", {
