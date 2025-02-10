@@ -7,12 +7,14 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
 
         const query = searchInput.value.trim();
-        if (!query) return;
+        if (!query) {
+            resultsContainer.innerHTML = "<p>Please enter a search term.</p>";
+            return;
+        }
 
         resultsContainer.innerHTML = "<p>Loading books...</p>";
 
         try {
-            // ✅ No API Key Needed!
             const response = await fetch(`/books/googlebooks/search?q=${encodeURIComponent(query)}`);
 
             if (!response.ok) {
