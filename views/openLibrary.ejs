@@ -1,0 +1,16 @@
+<%- include("navbar") %>
+
+<head>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+
+<h2>Search Books (Open Library)</h2>
+<form id="openLibrarySearchForm">
+    <input type="text" id="openLibraryQuery" placeholder="Enter book title..." required>
+    <button type="submit">Search</button>
+</form>
+
+<ul id="openLibraryResults"></ul>
+
+<script src="/js/openLibrary.js"></script> <!-- ✅ JavaScript for fetching books -->
+<%- include("footer") %>
