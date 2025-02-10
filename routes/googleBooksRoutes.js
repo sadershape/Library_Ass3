@@ -2,26 +2,32 @@ const express = require("express");
 const axios = require("axios");
 const router = express.Router();
 
-const GOOGLE_BOOKS_API_KEY = process.env.GOOGLE_BOOKS_API_KEY; // Ensure this is set in .env
+const GOOGLE_BOOKS_API_KEY = process.env.GOOGLE_BOOKS_API_KEY;
 
-// Google Books API Route
 router.get("/search", async (req, res) => {
     try {
-        const query = req.query.q || "fiction"; // Default search term
-        if (!query) {
-            return res.render("googleBooks", { books: [], message: "Please enter a search query." });
+        console.log("📌 Google Books Route Hit");
+        console.log("📌 API Key Found:", !!GOOGLE_BOOKS_API_KEY);
+
+        if (!GOOGLE_BOOKS_API_KEY) {
+            return res.status(500).render("error", { message: "Missing Google Books API Key. Check your .env file." });
         }
 
-        const response = await axios.get(
-            `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&key=${GOOGLE_BOOKS_API_KEY}`
-        );
+        const query = req.query.q || "fiction";
+        console.log("📌 Query:", query);
 
-        // Check if the API returned any books
+        const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&key=${GOOGLE_BOOKS_API_KEY}`;
+        console.log("📌 API URL:", apiUrl);
+
+        const response = await axios.get(apiUrl);
+
+        console.log("📌 API Response Status:", response.status);
+        console.log("📌 API Response Data:", JSON.stringify(response.data, null, 2)); // Logs entire response
+
         if (!response.data.items || response.data.items.length === 0) {
             return res.render("googleBooks", { books: [], message: "No books found for your search query." });
         }
 
-        // Map the response data to a simpler structure
         const books = response.data.items.map((item) => ({
             title: item.volumeInfo.title,
             author: item.volumeInfo.authors ? item.volumeInfo.authors.join(", ") : "Unknown",
@@ -30,11 +36,18 @@ router.get("/search", async (req, res) => {
             googleBooksUrl: item.volumeInfo.infoLink,
         }));
 
-        res.render("googleBooks", { books, message: null }); // Pass books and no error message
+        console.log("📌 Processed Books Data:", JSON.stringify(books, null, 2));
+
+        res.render("googleBooks", { books, message: null });
     } catch (error) {
         console.error("❌ Google Books API Error:", error.message);
+        
+        if (error.response) {
+            console.error("❌ Error Response Data:", error.response.data);
+        }
+
         res.status(500).render("error", {
-            message: "An error occurred while fetching books from Google Books API. Please try again later.",
+            message: "Error retrieving Google Books. Please try again later.",
         });
     }
 });
