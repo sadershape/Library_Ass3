@@ -1,15 +1,37 @@
+<style>
+    nav {
+        background-color: #0044cc; /* Dark blue background */
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    nav a {
+        text-decoration: none;
+        color: white; /* White text for contrast */
+        font-size: 18px;
+        padding: 10px 15px;
+        transition: background 0.3s ease-in-out;
+        border-radius: 5px;
+    }
+
+    nav a:hover {
+        background-color: rgba(255, 255, 255, 0.2); /* Subtle hover effect */
+    }
+</style>
+
 <nav>
-    <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/books">Guttenberg Books</a></li>
-        <li><a href="/openlibrary">Open Library Books</a></li>
-        <li><a href="/googlebooks">Google Books</a></li>
-        <li><a href="/weather">Weather</a></li>
-        <li><a href="/admin">Admin</a></li>
-        <% if (user) { %>
-            <li><a href="/logout">Logout</a></li>
-        <% } else { %>
-            <li><a href="/login">Login</a></li>
-        <% } %>
-    </ul>
+    <a href="/">Home</a>
+    <a href="/books">Gutenberg Books</a>
+    <a href="/books/openLibrary">Open Library Books</a>
+    <a href="/googleBooks">Google Books</a>
+    <a href="/weather">Weather</a>
+    <a href="/admin">Admin</a>
+
+    <% if (user) { %>
+        <a href="/logout">Logout</a>
+    <% } else { %>
+        <a href="/login">Login</a>
+    <% } %>
 </nav>
