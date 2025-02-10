@@ -1,0 +1,16 @@
+<%- include("navbar") %>
+
+<head>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+
+<h2>Search Books (Google Books)</h2>
+<form id="googleBooksSearchForm">
+    <input type="text" id="googleBooksQuery" placeholder="Enter book title..." required>
+    <button type="submit">Search</button>
+</form>
+
+<ul id="googleBooksResults"></ul>
+
+<script src="/js/googleBooks.js"></script> <!-- ✅ JavaScript for fetching books -->
+<%- include("footer") %>
