@@ -13,6 +13,8 @@ router.get("/search", async (req, res) => {
             return res.status(500).render("error", { message: "Missing Google Books API Key. Please check your .env file." });
         }
 
+        console.log("📌 Using API Key:", GOOGLE_BOOKS_API_KEY);
+
         const query = req.query.q || "fiction";
         console.log("📌 Query:", query);
 
@@ -22,7 +24,7 @@ router.get("/search", async (req, res) => {
         const response = await axios.get(apiUrl);
 
         console.log("📌 API Response Status:", response.status);
-        console.log("📌 API Response Data:", JSON.stringify(response.data, null, 2)); // Logs entire response
+        console.log("📌 API Response Data:", JSON.stringify(response.data, null, 2));
 
         if (!response.data.items || response.data.items.length === 0) {
             return res.render("googleBooks", { books: [], message: "No books found for your search query." });
@@ -41,7 +43,7 @@ router.get("/search", async (req, res) => {
         res.render("googleBooks", { books, message: null });
     } catch (error) {
         console.error("❌ Google Books API Error:", error.message);
-        
+
         if (error.response) {
             console.error("❌ Error Response Data:", JSON.stringify(error.response.data, null, 2));
         }
