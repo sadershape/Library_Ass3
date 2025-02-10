@@ -7,7 +7,7 @@ const path = require("path");
 const connectDB = require("./config/db");
 const bcrypt = require("bcryptjs");
 const User = require("./models/User"); // Import User model
-const Item = require("./models/Item"); // ✅ Import Item model
+const Item = require("./models/Item"); // Import Item model
 
 const app = express();
 
@@ -24,11 +24,11 @@ const createAdminUser = async () => {
     try {
         const existingAdmin = await User.findOne({ username: "admin" });
         if (!existingAdmin) {
-            const hashedPassword = await bcrypt.hash("admin123", 10); // Change this password for security
+            const hashedPassword = await bcrypt.hash("admin123", 10);
             const adminUser = new User({
                 username: "admin",
                 password: hashedPassword,
-                isAdmin: true
+                role: "admin" // ✅ Changed to role-based access
             });
             await adminUser.save();
             console.log("✅ Admin user created: admin/admin123");
@@ -63,14 +63,16 @@ app.use(session({
 
 // ✅ Pass session user data to views
 app.use((req, res, next) => {
-    res.locals.user = req.session.user || null; // Available in all EJS views
+    res.locals.user = req.session.user || null;
     next();
 });
 
 // ✅ Load Routes (Ensure These Files Exist)
 try {
     app.use("/", require("./routes/authRoutes")); // Login & Authentication
-    app.use("/books", require("./routes/bookRoutes")); // Books API
+    app.use("/books", require("./routes/bookRoutes")); // Books API (Gutenberg, Open Library, Google Books)
+    app.use("/api/openlibrary", require("./routes/openLibraryRoutes")); // Open Library API
+    app.use("/api/googlebooks", require("./routes/googleBooksRoutes")); // Google Books API
     app.use("/weather", require("./routes/weatherRoutes")); // Weather API
     app.use("/currency", require("./routes/currencyRoutes")); // Currency API
     app.use("/admin", require("./routes/adminRoutes")); // Admin Panel
@@ -80,27 +82,27 @@ try {
     console.error("❌ Route Loading Error:", error);
 }
 
-// ✅ Fixed Home Route - Fetch Items Before Rendering Index Page
+// ✅ Home Route - Fetch Items Before Rendering Index Page
 app.get("/", async (req, res) => {
     try {
-        const items = await Item.find({ deletedAt: null }); // ✅ Fetch only active items
-        console.log("📌 Items fetched:", items); // Debugging log
-        res.render("index", { user: req.session.user, items }); // ✅ Pass 'items' to index.ejs
+        const items = await Item.find({ deletedAt: null });
+        console.log("📌 Items fetched:", items);
+        res.render("index", { user: req.session.user, items });
     } catch (error) {
         console.error("❌ Error fetching items:", error);
-        res.render("index", { user: req.session.user, items: [] }); // ✅ Always pass an array to avoid errors
+        res.render("index", { user: req.session.user, items: [] });
     }
+});
+
+// ✅ Error Handling for Uncaught Routes
+app.use((req, res, next) => {
+    res.status(404).render("error", { message: "❌ 404 Not Found", user: req.session.user });
 });
 
 // ✅ Debugging: Show Full Errors Instead of Generic Message
 app.use((err, req, res, next) => {
     console.error("❌ ERROR:", err.stack);
     res.status(500).send(`<h1>Server Error</h1><p>${err.message}</p>`);
-});
-
-// ✅ 404 Not Found Handler
-app.use((req, res) => {
-    res.status(404).send("❌ 404 Not Found");
 });
 
 // ✅ Start Server
