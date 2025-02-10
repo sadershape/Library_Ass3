@@ -8,17 +8,14 @@ router.get("/search", async (req, res) => {
     try {
         console.log("📌 Google Books Route Hit");
 
-        if (!GOOGLE_BOOKS_API_KEY) {
-            console.error("❌ ERROR: Missing Google Books API Key!");
-            return res.status(500).render("error", { message: "Missing Google Books API Key. Please check your .env file." });
-        }
-
-        console.log("📌 Using API Key:", GOOGLE_BOOKS_API_KEY);
-
         const query = req.query.q || "fiction";
         console.log("📌 Query:", query);
 
-        const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&key=${GOOGLE_BOOKS_API_KEY}`;
+        // ✅ If an API key is available, use it. Otherwise, use the public API
+        const apiUrl = GOOGLE_BOOKS_API_KEY
+            ? `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&key=${GOOGLE_BOOKS_API_KEY}`
+            : `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`;
+
         console.log("📌 API URL:", apiUrl);
 
         const response = await axios.get(apiUrl);
@@ -43,7 +40,7 @@ router.get("/search", async (req, res) => {
         res.render("googleBooks", { books, message: null });
     } catch (error) {
         console.error("❌ Google Books API Error:", error.message);
-
+        
         if (error.response) {
             console.error("❌ Error Response Data:", JSON.stringify(error.response.data, null, 2));
         }
