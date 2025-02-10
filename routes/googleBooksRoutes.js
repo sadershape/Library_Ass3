@@ -2,8 +2,6 @@ const express = require("express");
 const axios = require("axios");
 const router = express.Router();
 
-const GOOGLE_BOOKS_API_KEY = process.env.GOOGLE_BOOKS_API_KEY;
-
 router.get("/search", async (req, res) => {
     try {
         console.log("📌 Google Books Route Hit");
@@ -11,11 +9,8 @@ router.get("/search", async (req, res) => {
         const query = req.query.q || "fiction";
         console.log("📌 Query:", query);
 
-        // ✅ If an API key is available, use it. Otherwise, use the public API
-        const apiUrl = GOOGLE_BOOKS_API_KEY
-            ? `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&key=${GOOGLE_BOOKS_API_KEY}`
-            : `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`;
-
+        // ✅ Use Free Version of Google Books API (No API Key)
+        const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`;
         console.log("📌 API URL:", apiUrl);
 
         const response = await axios.get(apiUrl);
@@ -40,7 +35,7 @@ router.get("/search", async (req, res) => {
         res.render("googleBooks", { books, message: null });
     } catch (error) {
         console.error("❌ Google Books API Error:", error.message);
-        
+
         if (error.response) {
             console.error("❌ Error Response Data:", JSON.stringify(error.response.data, null, 2));
         }
