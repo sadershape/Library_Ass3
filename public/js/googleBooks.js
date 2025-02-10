@@ -12,9 +12,9 @@ document.addEventListener("DOMContentLoaded", function () {
         resultsContainer.innerHTML = "<p>Loading books...</p>";
 
         try {
-            // ✅ New API route without key
+            // ✅ No API Key Needed!
             const response = await fetch(`/books/googlebooks/search?q=${encodeURIComponent(query)}`);
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
