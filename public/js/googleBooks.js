@@ -12,7 +12,13 @@ document.addEventListener("DOMContentLoaded", function () {
         resultsContainer.innerHTML = "<p>Loading books...</p>";
 
         try {
-            const response = await fetch(`/api/googlebooks/search?q=${encodeURIComponent(query)}`);
+            // ✅ FIXED: Correct API route
+            const response = await fetch(`/books/googlebooks/search?q=${encodeURIComponent(query)}`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
             const books = await response.json();
 
             resultsContainer.innerHTML = ""; // Clear previous results
