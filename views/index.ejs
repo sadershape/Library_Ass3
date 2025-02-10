@@ -11,8 +11,53 @@
     <%- include("navbar") %>
 
     <div class="container text-center">
+        <!-- Welcome Section -->
         <h1>Welcome to the Library</h1>
-        <p>Explore books, check weather, and manage the library.</p>
+        <p>Discover a world of books, explore weather updates, and manage your library seamlessly.</p>
+
+        <hr>
+
+        <!-- About the Search Options -->
+        <section class="search-info">
+            <h2>Explore Our Search Options</h2>
+            <p>Choose the right tool for your needs:</p>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h3 class="card-title">Gutenberg Books</h3>
+                            <p class="card-text">
+                                Access free eBooks from Project Gutenberg. Perfect for finding public domain works like classic literature and historical texts.
+                            </p>
+                            <a href="/books" class="btn btn-primary">Explore Gutenberg Books</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h3 class="card-title">Open Library</h3>
+                            <p class="card-text">
+                                Search Open Library's comprehensive bibliographic database. Ideal for exploring works, authors, and editions with detailed publication data.
+                            </p>
+                            <a href="/books/openlibrary" class="btn btn-primary">Search Open Library</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h3 class="card-title">Google Books</h3>
+                            <p class="card-text">
+                                Browse Google Books' extensive collection. Best for discovering modern books, previews, and extensive bibliographic details.
+                            </p>
+                            <a href="/books/googlebooks" class="btn btn-primary">Browse Google Books</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <hr>
 
