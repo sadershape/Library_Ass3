@@ -71,7 +71,7 @@ app.use((req, res, next) => {
 app.use("/", require("./routes/authRoutes")); // Login & Authentication
 app.use("/books", require("./routes/bookRoutes")); // Books API (Gutenberg, Open Library, Google Books)
 app.use("/api/openlibrary", require("./routes/openLibraryRoutes")); // Open Library API
-app.use("/api/googlebooks", require("./routes/googleBooksRoutes")); // Google Books API
+app.use("/books/googlebooks", require("./routes/googleBooksRoutes")); // Google Books API
 app.use("/weather", require("./routes/weatherRoutes")); // Weather API
 app.use("/currency", require("./routes/currencyRoutes")); // Currency API
 app.use("/admin", require("./routes/adminRoutes")); // Admin Panel
