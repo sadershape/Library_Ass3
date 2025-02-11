@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        resultsContainer.innerHTML = "<div class='spinner-border text-primary' role='status'></div>";
+        resultsContainer.innerHTML = "<p class='loading'>🔄 Loading books...</p>";
 
         try {
             // ✅ Fetch Google Books API Data
@@ -30,28 +30,26 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // ✅ Display Books in Cards
+            // ✅ Display Books in Same Style as Open Library & Gutenberg
             data.items.forEach(book => {
                 const bookInfo = book.volumeInfo;
-                const bookCard = document.createElement("div");
-                bookCard.classList.add("col");
+                const bookElement = document.createElement("div");
+                bookElement.classList.add("book-card");
 
-                bookCard.innerHTML = `
-                    <div class="card h-100 shadow-sm">
+                bookElement.innerHTML = `
+                    <div class="book-img">
                         <img src="${bookInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/128x190?text=No+Image'}" 
-                             alt="${bookInfo.title}" class="card-img-top">
-                        <div class="card-body">
-                            <h5 class="card-title">${bookInfo.title}</h5>
-                            <p class="card-text"><strong>Author:</strong> ${bookInfo.authors ? bookInfo.authors.join(", ") : "Unknown"}</p>
-                            <p class="card-text"><strong>Published:</strong> ${bookInfo.publishedDate || "N/A"}</p>
-                        </div>
-                        <div class="card-footer">
-                            <a href="${bookInfo.infoLink}" target="_blank" class="btn btn-primary w-100">📘 More Info</a>
-                        </div>
+                             alt="${bookInfo.title}">
+                    </div>
+                    <div class="book-info">
+                        <h3>${bookInfo.title}</h3>
+                        <p><strong>Author:</strong> ${bookInfo.authors ? bookInfo.authors.join(", ") : "Unknown"}</p>
+                        <p><strong>Published:</strong> ${bookInfo.publishedDate || "N/A"}</p>
+                        <a href="${bookInfo.infoLink}" target="_blank" class="btn">📘 More Info</a>
                     </div>
                 `;
 
-                resultsContainer.appendChild(bookCard);
+                resultsContainer.appendChild(bookElement);
             });
         } catch (error) {
             console.error("❌ Error fetching books:", error);
