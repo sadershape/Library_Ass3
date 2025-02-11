@@ -15,30 +15,38 @@ document.addEventListener("DOMContentLoaded", function () {
         resultsContainer.innerHTML = "<p>Loading books...</p>";
 
         try {
-            const response = await fetch(`/books/googlebooks/search?q=${encodeURIComponent(query)}`);
+            // ✅ Fetch directly from Google Books API
+            const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
-            const books = await response.json();
+            const data = await response.json();
 
             resultsContainer.innerHTML = ""; // Clear previous results
 
-            if (!books.length) {
+            if (!data.items || data.items.length === 0) {
                 resultsContainer.innerHTML = "<p>No books found.</p>";
                 return;
             }
 
-            books.forEach(book => {
-                const listItem = document.createElement("li");
+            data.items.forEach(book => {
+                const bookInfo = book.volumeInfo;
+                const listItem = document.createElement("div");
+                listItem.classList.add("col-md-4");
 
                 listItem.innerHTML = `
-                    <h3>${book.title}</h3>
-                    <p><strong>Author:</strong> ${book.author}</p>
-                    <p><strong>Published:</strong> ${book.publishedDate || "N/A"}</p>
-                    <a href="${book.googleBooksUrl}" target="_blank">More Info</a>
-                    ${book.cover ? `<img src="${book.cover}" width="100">` : ""}
+                    <div class="card mb-4">
+                        <img src="${bookInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/128x190?text=No+Image'}" 
+                             alt="${bookInfo.title}" class="card-img-top">
+                        <div class="card-body">
+                            <h5 class="card-title">${bookInfo.title}</h5>
+                            <p class="card-text"><strong>Author:</strong> ${bookInfo.authors ? bookInfo.authors.join(", ") : "Unknown"}</p>
+                            <p class="card-text"><strong>Published:</strong> ${bookInfo.publishedDate || "N/A"}</p>
+                            <a href="${bookInfo.infoLink}" target="_blank" class="btn btn-primary">More Info</a>
+                        </div>
+                    </div>
                 `;
 
                 resultsContainer.appendChild(listItem);
