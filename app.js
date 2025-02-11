@@ -49,6 +49,9 @@ app.use(express.urlencoded({ extended: true })); // Parse form data
 app.use(express.json()); // Parse JSON requests
 app.use(express.static(path.join(__dirname, "public"))); // Serve static files
 
+// ✅ Fix for "favicon.ico" 404 errors
+app.use("/favicon.ico", (req, res) => res.status(204));
+
 // ✅ Configure sessions with MongoDB storage
 app.use(session({
     secret: process.env.SESSION_SECRET || "default_secret",
@@ -67,26 +70,19 @@ app.use((req, res, next) => {
     next();
 });
 
-// ✅ Load Routes (Ensure These Files Exist)
-try {
-    app.use("/", require("./routes/authRoutes")); // Login & Authentication
-    app.use("/books", require("./routes/bookRoutes")); // Books API (Gutenberg, Open Library)
-    app.use("/api/openlibrary", require("./routes/openLibraryRoutes")); // Open Library API
-    app.use("/weather", require("./routes/weatherRoutes")); // Weather API
-    app.use("/currency", require("./routes/currencyRoutes")); // Currency API
-    app.use("/admin", require("./routes/adminRoutes")); // Admin Panel
-    app.use("/history", require("./routes/historyRoutes")); // History Feature
-    app.use("/opengraph", require("./routes/opengraphRoutes")); // OpenGraph API
-} catch (error) {
-    console.error("❌ Route Loading Error:", error);
-}
+// ✅ Load Routes
+app.use("/", require("./routes/authRoutes")); // Login & Authentication
+app.use("/books", require("./routes/bookRoutes")); // Books API (Gutenberg, Open Library)
+app.use("/api/openlibrary", require("./routes/openLibraryRoutes")); // Open Library API
+app.use("/weather", require("./routes/weatherRoutes")); // Weather API
+app.use("/currency", require("./routes/currencyRoutes")); // Currency API
+app.use("/admin", require("./routes/adminRoutes")); // Admin Panel
+app.use("/history", require("./routes/historyRoutes")); // History Feature
+app.use("/opengraph", require("./routes/opengraphRoutes")); // OpenGraph API
 
-// ✅ Debugging: Log All Registered Routes
-console.log("📌 Registered Routes:");
-app._router.stack.forEach((route) => {
-    if (route.route && route.route.path) {
-        console.log(route.route.path);
-    }
+// ✅ Google Books Page (Client-Side Only)
+app.get("/googlebooks", (req, res) => {
+    res.render("googleBooks");
 });
 
 // ✅ Home Route - Fetch Items Before Rendering Index Page
@@ -104,13 +100,13 @@ app.get("/", async (req, res) => {
 // ✅ 404 Error Handling for Unrecognized Routes
 app.use((req, res) => {
     console.error(`❌ 404 Not Found: ${req.originalUrl}`);
-    res.status(404).render("error", { message: `❌ 404 Not Found: ${req.originalUrl}`, user: req.session.user });
+    res.status(404).json({ error: `404 Not Found: ${req.originalUrl}` });
 });
 
 // ✅ Debugging: Show Full Errors Instead of Generic Message
 app.use((err, req, res, next) => {
     console.error("❌ ERROR:", err.stack);
-    res.status(500).send(`<h1>Server Error</h1><p>${err.message}</p>`);
+    res.status(500).json({ error: "Internal Server Error", details: err.message });
 });
 
 // ✅ Start Server
