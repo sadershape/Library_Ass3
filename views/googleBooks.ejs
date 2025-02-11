@@ -1,16 +1,16 @@
 <%- include("navbar") %>
 
-<div class="container text-center mt-5">
-    <h2 class="mb-4">📖 Google Books Search</h2>
+<div class="container mt-5">
+    <h2 class="text-center">📖 Google Books Search</h2>
 
     <!-- Search Form -->
-    <form id="googleBooksSearchForm" class="d-flex justify-content-center mb-4">
-        <input type="text" id="googleBooksQuery" class="form-control me-2" placeholder="Search for books..." required>
-        <button type="submit" class="btn btn-primary">🔍 Search</button>
+    <form id="googleBooksSearchForm" class="search-form">
+        <input type="text" id="googleBooksQuery" placeholder="Search for books..." required>
+        <button type="submit" class="btn">🔍 Search</button>
     </form>
 
-    <!-- Results Container -->
-    <div id="googleBooksResults" class="row row-cols-1 row-cols-md-3 g-4"></div>
+    <!-- Results Section -->
+    <div id="googleBooksResults" class="book-list"></div>
 </div>
 
 <%- include("footer") %>
