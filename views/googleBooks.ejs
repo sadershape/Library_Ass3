@@ -4,38 +4,16 @@
     <h2>Google Books Search</h2>
 
     <!-- Search Form -->
-    <form action="/books/googlebooks/search" method="GET" class="mb-4">
-        <input type="text" name="q" placeholder="Search for books..." required>
+    <form id="googleBooksSearchForm" class="mb-4">
+        <input type="text" id="googleBooksQuery" placeholder="Search for books..." required>
         <button type="submit" class="btn btn-primary">Search</button>
     </form>
 
-    <!-- Display Message (Error or No Results) -->
-    <% if (typeof message !== "undefined" && message) { %>
-        <p class="text-danger"><%= message %></p>
-    <% } %>
-
-    <% if (books.length > 0) { %>
-        <div class="row">
-            <% books.forEach((book) => { %>
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <% if (book.cover) { %>
-                            <img src="<%= book.cover %>" alt="<%= book.title %>" class="card-img-top">
-                        <% } else { %>
-                            <img src="https://via.placeholder.com/128x190?text=No+Image" alt="No Image Available" class="card-img-top">
-                        <% } %>
-                        
-                        <div class="card-body">
-                            <h5 class="card-title"><%= book.title %></h5>
-                            <p class="card-text"><strong>Author:</strong> <%= book.author %></p>
-                            <p class="card-text"><strong>Published:</strong> <%= book.publishedDate || "N/A" %></p>
-                            <a href="<%= book.googleBooksUrl %>" target="_blank" class="btn btn-primary">More Info</a>
-                        </div>
-                    </div>
-                </div>
-            <% }); %>
-        </div>
-    <% } %>
+    <!-- Results Container -->
+    <div id="googleBooksResults" class="row"></div>
 </div>
 
 <%- include("footer") %>
+
+<!-- Link JavaScript -->
+<script src="/js/googleBooks.js"></script>
