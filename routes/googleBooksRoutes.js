@@ -2,27 +2,25 @@ const express = require("express");
 const axios = require("axios");
 const router = express.Router();
 
+const GOOGLE_BOOKS_API_KEY = process.env.GOOGLE_BOOKS_API_KEY; // Ensure your .env file has this!
+
 router.get("/search", async (req, res) => {
     try {
         console.log("📌 Google Books Route Hit");
 
-        const query = req.query.q || "fiction";  // Default to "fiction" if no query is provided
+        const query = req.query.q || "fiction"; // Default search if empty
         console.log("📌 Query:", query);
 
-        // ✅ Ensure query is not empty
         if (!query.trim()) {
             console.error("❌ ERROR: Empty search query!");
             return res.status(400).render("error", { message: "Invalid search query. Please enter a valid book title." });
         }
 
-        // ✅ Correct API URL
-        const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`;
+        const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&key=${GOOGLE_BOOKS_API_KEY}`;
         console.log("📌 API URL:", apiUrl);
 
         const response = await axios.get(apiUrl);
-
         console.log("📌 API Response Status:", response.status);
-        console.log("📌 API Response Data:", JSON.stringify(response.data, null, 2));
 
         if (!response.data.items || response.data.items.length === 0) {
             return res.render("googleBooks", { books: [], message: "No books found for your search query." });
@@ -36,8 +34,6 @@ router.get("/search", async (req, res) => {
             googleBooksUrl: item.volumeInfo.infoLink,
         }));
 
-        console.log("📌 Processed Books Data:", JSON.stringify(books, null, 2));
-
         res.render("googleBooks", { books, message: null });
     } catch (error) {
         console.error("❌ Google Books API Error:", error.message);
@@ -47,7 +43,7 @@ router.get("/search", async (req, res) => {
         }
 
         res.status(500).render("error", {
-            message: `Error retrieving Google Books. ${error.response ? error.response.data.error.message : error.message}`,
+            message: "Error retrieving Google Books. Please try again later.",
         });
     }
 });
