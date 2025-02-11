@@ -100,7 +100,8 @@ app.get("/", async (req, res) => {
 
 // ✅ 404 Error Handling for Unrecognized Routes
 app.use((req, res) => {
-    res.status(404).render("error", { message: "❌ 404 Not Found", user: req.session.user });
+    console.error(`❌ 404 Not Found: ${req.originalUrl}`);
+    res.status(404).render("error", { message: `❌ 404 Not Found: ${req.originalUrl}`, user: req.session.user });
 });
 
 // ✅ Debugging: Show Full Errors Instead of Generic Message
