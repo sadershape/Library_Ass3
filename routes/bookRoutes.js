@@ -1,51 +1,41 @@
 const express = require("express");
-const axios = require("axios");
 const router = express.Router();
+const axios = require("axios");
 
-const GOOGLE_BOOKS_API_KEY = process.env.GOOGLE_BOOKS_API_KEY; // Ensure your .env file has this!
+const GUTENDEX_API_URL = "https://gutendex.com/books/";
+const OPEN_LIBRARY_API_URL = "https://openlibrary.org/search.json";
 
-router.get("/search", async (req, res) => {
+// ✅ Gutenberg Books Route
+router.get("/", async (req, res) => {
     try {
-        console.log("📌 Google Books Route Hit");
+        console.log("📌 Gutenberg Route Hit");
+        const searchQuery = req.query.q || "library";
+        console.log("📌 Search Query:", searchQuery);
 
-        const query = req.query.q || "fiction"; // Default search if empty
-        console.log("📌 Query:", query);
+        const response = await axios.get(`${GUTENDEX_API_URL}?search=${encodeURIComponent(searchQuery)}`);
+        const books = response.data.results || [];
 
-        if (!query.trim()) {
-            console.error("❌ ERROR: Empty search query!");
-            return res.status(400).render("error", { message: "Invalid search query. Please enter a valid book title." });
-        }
-
-        // ✅ Use API Key
-        const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&key=${GOOGLE_BOOKS_API_KEY}`;
-        console.log("📌 API URL:", apiUrl);
-
-        const response = await axios.get(apiUrl);
-        console.log("📌 API Response Status:", response.status);
-
-        if (!response.data.items || response.data.items.length === 0) {
-            return res.render("googleBooks", { books: [], message: "No books found for your search query." });
-        }
-
-        const books = response.data.items.map((item) => ({
-            title: item.volumeInfo.title,
-            author: item.volumeInfo.authors ? item.volumeInfo.authors.join(", ") : "Unknown",
-            cover: item.volumeInfo.imageLinks ? item.volumeInfo.imageLinks.thumbnail : null,
-            publishedDate: item.volumeInfo.publishedDate,
-            googleBooksUrl: item.volumeInfo.infoLink,
-        }));
-
-        res.render("googleBooks", { books, message: null });
+        res.render("books", { books, user: req.session.user });
     } catch (error) {
-        console.error("❌ Google Books API Error:", error.message);
+        console.error("❌ Error fetching books from Gutenberg API:", error.message);
+        res.status(500).render("error", { message: "Error retrieving books from Gutenberg API." });
+    }
+});
 
-        if (error.response) {
-            console.error("❌ Full Error Response:", JSON.stringify(error.response.data, null, 2));
-        }
+// ✅ Open Library Books Route
+router.get("/openlibrary", async (req, res) => {
+    try {
+        console.log("📌 Open Library Route Hit");
+        const searchQuery = req.query.q || "library";
+        console.log("📌 Search Query:", searchQuery);
 
-        res.status(500).render("error", {
-            message: "Error retrieving Google Books. Please try again later.",
-        });
+        const response = await axios.get(`${OPEN_LIBRARY_API_URL}?q=${encodeURIComponent(searchQuery)}`);
+        const books = response.data.docs || [];
+
+        res.render("openLibrary", { books, user: req.session.user });
+    } catch (error) {
+        console.error("❌ Error fetching books from Open Library API:", error.message);
+        res.status(500).render("error", { message: "Error retrieving books from Open Library API." });
     }
 });
 
