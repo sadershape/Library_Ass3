@@ -8,14 +8,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const query = searchInput.value.trim();
         if (!query) {
-            resultsContainer.innerHTML = "<p>Please enter a search term.</p>";
+            resultsContainer.innerHTML = "<p class='alert alert-warning'>Please enter a search term.</p>";
             return;
         }
 
-        resultsContainer.innerHTML = "<p>Loading books...</p>";
+        resultsContainer.innerHTML = "<div class='spinner-border text-primary' role='status'></div>";
 
         try {
-            // ✅ Fetch directly from Google Books API
+            // ✅ Fetch Google Books API Data
             const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`);
 
             if (!response.ok) {
@@ -23,37 +23,39 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const data = await response.json();
-
             resultsContainer.innerHTML = ""; // Clear previous results
 
             if (!data.items || data.items.length === 0) {
-                resultsContainer.innerHTML = "<p>No books found.</p>";
+                resultsContainer.innerHTML = "<p class='alert alert-danger'>No books found.</p>";
                 return;
             }
 
+            // ✅ Display Books in Cards
             data.items.forEach(book => {
                 const bookInfo = book.volumeInfo;
-                const listItem = document.createElement("div");
-                listItem.classList.add("col-md-4");
+                const bookCard = document.createElement("div");
+                bookCard.classList.add("col");
 
-                listItem.innerHTML = `
-                    <div class="card mb-4">
+                bookCard.innerHTML = `
+                    <div class="card h-100 shadow-sm">
                         <img src="${bookInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/128x190?text=No+Image'}" 
                              alt="${bookInfo.title}" class="card-img-top">
                         <div class="card-body">
                             <h5 class="card-title">${bookInfo.title}</h5>
                             <p class="card-text"><strong>Author:</strong> ${bookInfo.authors ? bookInfo.authors.join(", ") : "Unknown"}</p>
                             <p class="card-text"><strong>Published:</strong> ${bookInfo.publishedDate || "N/A"}</p>
-                            <a href="${bookInfo.infoLink}" target="_blank" class="btn btn-primary">More Info</a>
+                        </div>
+                        <div class="card-footer">
+                            <a href="${bookInfo.infoLink}" target="_blank" class="btn btn-primary w-100">📘 More Info</a>
                         </div>
                     </div>
                 `;
 
-                resultsContainer.appendChild(listItem);
+                resultsContainer.appendChild(bookCard);
             });
         } catch (error) {
             console.error("❌ Error fetching books:", error);
-            resultsContainer.innerHTML = "<p>❌ Error fetching books. Try again later.</p>";
+            resultsContainer.innerHTML = "<p class='alert alert-danger'>❌ Error fetching books. Try again later.</p>";
         }
     });
 });
