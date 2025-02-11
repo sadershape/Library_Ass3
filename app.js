@@ -28,7 +28,7 @@ const createAdminUser = async () => {
             const adminUser = new User({
                 username: "admin",
                 password: hashedPassword,
-                role: "admin" // ✅ Changed to role-based access
+                role: "admin"
             });
             await adminUser.save();
             console.log("✅ Admin user created: admin/admin123");
@@ -68,14 +68,18 @@ app.use((req, res, next) => {
 });
 
 // ✅ Load Routes (Ensure These Files Exist)
-app.use("/", require("./routes/authRoutes")); // Login & Authentication
-app.use("/books", require("./routes/bookRoutes")); // Books API (Gutenberg, Open Library, Google Books)
-app.use("/api/openlibrary", require("./routes/openLibraryRoutes")); // Open Library API
-app.use("/weather", require("./routes/weatherRoutes")); // Weather API
-app.use("/currency", require("./routes/currencyRoutes")); // Currency API
-app.use("/admin", require("./routes/adminRoutes")); // Admin Panel
-app.use("/history", require("./routes/historyRoutes")); // History Feature
-app.use("/opengraph", require("./routes/opengraphRoutes")); // OpenGraph API
+try {
+    app.use("/", require("./routes/authRoutes")); // Login & Authentication
+    app.use("/books", require("./routes/bookRoutes")); // Books API (Gutenberg, Open Library)
+    app.use("/api/openlibrary", require("./routes/openLibraryRoutes")); // Open Library API
+    app.use("/weather", require("./routes/weatherRoutes")); // Weather API
+    app.use("/currency", require("./routes/currencyRoutes")); // Currency API
+    app.use("/admin", require("./routes/adminRoutes")); // Admin Panel
+    app.use("/history", require("./routes/historyRoutes")); // History Feature
+    app.use("/opengraph", require("./routes/opengraphRoutes")); // OpenGraph API
+} catch (error) {
+    console.error("❌ Route Loading Error:", error);
+}
 
 // ✅ Debugging: Log All Registered Routes
 console.log("📌 Registered Routes:");
