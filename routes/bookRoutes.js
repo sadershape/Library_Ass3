@@ -18,7 +18,7 @@ router.get("/", async (req, res) => {
         res.render("books", { books, user: req.session.user });
     } catch (error) {
         console.error("❌ Error fetching books from Gutenberg API:", error.message);
-        res.status(500).render("error", { message: "Error retrieving books from Gutenberg API." });
+        res.status(500).json({ error: "Error retrieving books from Gutenberg API." });
     }
 });
 
