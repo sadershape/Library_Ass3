@@ -4,10 +4,11 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const path = require("path");
+const flash = require("express-flash"); // ✅ Import express-flash
 const connectDB = require("./config/db");
 const bcrypt = require("bcryptjs");
-const User = require("./models/User"); // Import User model
-const Item = require("./models/Item"); // Import Item model
+const User = require("./models/User");
+const Item = require("./models/Item");
 
 const app = express();
 
@@ -45,9 +46,10 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // ✅ Middleware
-app.use(express.urlencoded({ extended: true })); // Parse form data
-app.use(express.json()); // Parse JSON requests
-app.use(express.static(path.join(__dirname, "public"))); // Serve static files
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
+app.use(flash()); // ✅ Use express-flash
 
 // ✅ Fix for "favicon.ico" 404 errors
 app.use("/favicon.ico", (req, res) => res.status(204));
@@ -64,23 +66,25 @@ app.use(session({
     cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 24 }
 }));
 
-// ✅ Pass session user data to views
+// ✅ Pass session user data & flash messages to views
 app.use((req, res, next) => {
     res.locals.user = req.session.user || null;
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
     next();
 });
 
 // ✅ Load Routes
-app.use("/", require("./routes/authRoutes")); // Login & Authentication
-app.use("/books", require("./routes/bookRoutes")); // Books API (Gutenberg, Open Library)
-app.use("/api/openlibrary", require("./routes/openLibraryRoutes")); // Open Library API
-app.use("/weather", require("./routes/weatherRoutes")); // Weather API
-app.use("/currency", require("./routes/currencyRoutes")); // Currency API
-app.use("/admin", require("./routes/adminRoutes")); // Admin Panel
-app.use("/history", require("./routes/historyRoutes")); // History Feature
-app.use("/opengraph", require("./routes/opengraphRoutes")); // OpenGraph API
+app.use("/", require("./routes/authRoutes"));
+app.use("/books", require("./routes/bookRoutes"));
+app.use("/api/openlibrary", require("./routes/openLibraryRoutes"));
+app.use("/weather", require("./routes/weatherRoutes"));
+app.use("/currency", require("./routes/currencyRoutes"));
+app.use("/admin", require("./routes/adminRoutes"));
+app.use("/history", require("./routes/historyRoutes"));
+app.use("/opengraph", require("./routes/opengraphRoutes"));
 
-// ✅ Google Books Page (Client-Side Only)
+// ✅ Google Books Page
 app.get("/googlebooks", (req, res) => {
     res.render("googleBooks");
 });
