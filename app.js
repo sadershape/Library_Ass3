@@ -64,6 +64,12 @@ app.use(session({
     cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 24 }
 }));
 
+// ✅ Ensure `user` is available in all EJS views
+app.use((req, res, next) => {
+    res.locals.user = req.session.user || null;
+    next();
+});
+
 // ✅ Custom Flash Message Middleware (Replacing express-flash)
 app.use((req, res, next) => {
     res.locals.success = req.session.success || null;
