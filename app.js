@@ -49,7 +49,7 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(flash()); // ✅ Use express-flash
+
 
 // ✅ Fix for "favicon.ico" 404 errors
 app.use("/favicon.ico", (req, res) => res.status(204));
@@ -65,6 +65,8 @@ app.use(session({
     }),
     cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 24 }
 }));
+
+app.use(flash()); // ✅ Use express-flash
 
 // ✅ Pass session user data & flash messages to views
 app.use((req, res, next) => {
