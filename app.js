@@ -4,7 +4,6 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const path = require("path");
-const flash = require("express-flash"); // ✅ Import express-flash
 const connectDB = require("./config/db");
 const bcrypt = require("bcryptjs");
 const User = require("./models/User");
@@ -50,7 +49,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-
 // ✅ Fix for "favicon.ico" 404 errors
 app.use("/favicon.ico", (req, res) => res.status(204));
 
@@ -66,13 +64,12 @@ app.use(session({
     cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 24 }
 }));
 
-app.use(flash()); // ✅ Use express-flash
-
-// ✅ Pass session user data & flash messages to views
+// ✅ Custom Flash Message Middleware (Replacing express-flash)
 app.use((req, res, next) => {
-    res.locals.user = req.session.user || null;
-    res.locals.success = req.flash("success");
-    res.locals.error = req.flash("error");
+    res.locals.success = req.session.success || null;
+    res.locals.error = req.session.error || null;
+    delete req.session.success;
+    delete req.session.error;
     next();
 });
 
