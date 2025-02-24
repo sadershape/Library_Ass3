@@ -1,7 +1,8 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
+import express from "express";
+import bcrypt from "bcryptjs";
+import User from "../models/User.js"; // Import the User model
+
 const router = express.Router();
-const User = require("../models/User"); // Import the User model
 
 // 📌 Login Page Route
 router.get("/login", (req, res) => {
@@ -27,11 +28,7 @@ router.post("/login", async (req, res) => {
         console.log("✅ Login successful:", req.session.user);
 
         // ✅ Redirect admins to admin panel, users to home
-        if (user.role === "admin") {
-            return res.redirect("/admin");
-        } else {
-            return res.redirect("/");
-        }
+        return res.redirect(user.role === "admin" ? "/admin" : "/");
     } catch (error) {
         console.error("❌ Login error:", error);
         res.status(500).send("❌ Internal server error");
@@ -79,4 +76,4 @@ router.get("/logout", (req, res) => {
     });
 });
 
-module.exports = router;
+export default router; // ✅ Use `export default` instead of `module.exports`
