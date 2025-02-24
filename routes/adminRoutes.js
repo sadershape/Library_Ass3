@@ -1,9 +1,10 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const User = require("../models/User");
-const Item = require("../models/Item");
+import express from "express";
+import bcrypt from "bcryptjs";
+import User from "../models/User.js";
+import Item from "../models/Item.js";
 
 const router = express.Router();
+export default router;
 
 // Middleware to handle flash messages
 const flashMiddleware = (req, res, next) => {
