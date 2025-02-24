@@ -4,4 +4,8 @@
   "login": "Войти",
   "logout": "Выйти",
   "books": "Книги"
+  "home": "Дом",
+  "gutenberg": "Книги Гюттенберг",
+  "openLibrary": "Книги Open Library",
+  "googleBooks": "Книги Google"
 }
