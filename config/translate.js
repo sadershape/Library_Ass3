@@ -1,4 +1,4 @@
-const translate = require("@vitalets/google-translate-api");
+import { translate } from "@vitalets/google-translate-api";
 
 /**
  * Translates a given text, object, or array containing text fields.
@@ -6,13 +6,13 @@ const translate = require("@vitalets/google-translate-api");
  * @param {string} targetLang - The target language code ("ru" or "en").
  * @returns {Promise<Object|string|Array>} - Translated text, object, or array.
  */
-async function translateText(data, targetLang) {
+export async function translateText(data, targetLang) {
     if (targetLang === "en") return data; // Skip translation if English
 
     try {
         if (typeof data === "string") {
-            const res = await translate(data, { to: targetLang });
-            return res.text;
+            const { text } = await translate(data, { to: targetLang });
+            return text;
         }
 
         if (Array.isArray(data)) {
@@ -37,5 +37,3 @@ async function translateText(data, targetLang) {
 
     return data; // Return original data if an error occurs
 }
-
-module.exports = translateText;
