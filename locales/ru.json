@@ -3,9 +3,10 @@
   "welcome_message": "Добро пожаловать в библиотеку",
   "login": "Войти",
   "logout": "Выйти",
-  "books": "Книги"
+  "books": "Книги",
   "home": "Дом",
   "gutenberg": "Книги Гюттенберг",
   "openLibrary": "Книги Open Library",
-  "googleBooks": "Книги Google"
+  "googleBooks": "Книги Google",
+  "admin": "Админ"
 }
