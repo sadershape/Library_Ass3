@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const ItemSchema = new mongoose.Schema({
     images: [String], // Array of 3 image URLs
@@ -11,4 +11,5 @@ const ItemSchema = new mongoose.Schema({
     deletedAt: { type: Date }
 });
 
-module.exports = mongoose.model("Item", ItemSchema);
+const Item = mongoose.model("Item", ItemSchema);
+export default Item; // ✅ Export as default
