@@ -1,6 +1,7 @@
-const express = require("express");
+import express from "express";
+import History from "../models/History.js"; // Ensure the .js extension is included
+
 const router = express.Router();
-const History = require("../models/History"); // Ensure you have a History model
 
 // Route to fetch history
 router.get("/", async (req, res) => {
@@ -27,4 +28,5 @@ router.post("/add", async (req, res) => {
   }
 });
 
-module.exports = router;
+// ✅ Correct ES Module Export
+export default router;
