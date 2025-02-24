@@ -49,9 +49,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ Fix for "favicon.ico" 404 errors
-app.use("/favicon.ico", (req, res) => res.status(204));
-
 // ✅ Configure sessions with MongoDB storage
 app.use(session({
     secret: process.env.SESSION_SECRET || "default_secret",
@@ -64,13 +61,31 @@ app.use(session({
     cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 24 }
 }));
 
+// ✅ Set default language if not set
+app.use((req, res, next) => {
+    if (!req.session.language) {
+        req.session.language = "en"; // Default to English
+    }
+    res.locals.language = req.session.language; // Make available in all views
+    next();
+});
+
+// ✅ Route to change language
+app.get("/change-language/:lang", (req, res) => {
+    const { lang } = req.params;
+    if (lang === "en" || lang === "ru") {
+        req.session.language = lang;
+    }
+    res.redirect(req.get("Referer") || "/"); // Redirect back to the same page
+});
+
 // ✅ Ensure `user` is available in all EJS views
 app.use((req, res, next) => {
     res.locals.user = req.session.user || null;
     next();
 });
 
-// ✅ Custom Flash Message Middleware (Replacing express-flash)
+// ✅ Custom Flash Message Middleware
 app.use((req, res, next) => {
     res.locals.success = req.session.success || null;
     res.locals.error = req.session.error || null;
@@ -99,10 +114,10 @@ app.get("/", async (req, res) => {
     try {
         const items = await Item.find({ deletedAt: null });
         console.log("📌 Items fetched:", items);
-        res.render("index", { user: req.session.user, items });
+        res.render("index", { user: req.session.user, items, language: req.session.language });
     } catch (error) {
         console.error("❌ Error fetching items:", error);
-        res.render("index", { user: req.session.user, items: [] });
+        res.render("index", { user: req.session.user, items: [], language: req.session.language });
     }
 });
 
