@@ -89,15 +89,23 @@ app.use((req, res, next) => {
     next();
 });
 
-// ✅ Route to change language
+// ✅ Language change route with translation
+const messages = {
+    en: { success: "Language changed to English" },
+    ru: { success: "Язык изменен на русский" }
+};
+
 app.get("/set-language/:lang", (req, res) => {
     const { lang } = req.params;
     if (["en", "ru"].includes(lang)) {
         req.session.language = lang;
-        res.json({ success: `Language changed to ${lang}` });
-    } else {
-        res.status(400).json({ error: "Invalid language selection" });
-    }
+        if (req.get("Accept") === "application/json") {
+            return res.json({ success: messages[lang].success });
+        }
+        req.session.success = messages[lang].success;
+        return res.redirect(req.get("Referer") || "/");
+    } 
+    res.status(400).json({ error: "Invalid language selection" });
 });
 
 // ✅ Ensure `user` is available in all EJS views
