@@ -1,7 +1,8 @@
-const express = require("express");
+import express from "express";
+import axios from "axios";
+import translateText from "../config/translate.js"; // Ensure .js extension is included
+
 const router = express.Router();
-const axios = require("axios");
-const translateText = require("../config/translate");
 
 const GUTENDEX_API_URL = "https://gutendex.com/books/";
 const OPEN_LIBRARY_API_URL = "https://openlibrary.org/search.json";
@@ -60,4 +61,4 @@ router.get("/openlibrary", async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router; // ✅ Use `export default`
