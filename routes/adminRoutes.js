@@ -4,7 +4,7 @@ import User from "../models/User.js";
 import Item from "../models/Item.js";
 
 const router = express.Router();
-export default router;
+
 
 // Middleware to handle flash messages
 const flashMiddleware = (req, res, next) => {
@@ -117,4 +117,4 @@ router.post("/items/delete/:id", async (req, res) => {
     res.redirect("/admin");
 });
 
-module.exports = router;
+export default router;
