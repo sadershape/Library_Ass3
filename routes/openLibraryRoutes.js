@@ -1,9 +1,10 @@
-const express = require("express");
-const axios = require("axios");
-const router = express.Router();
-const translateText = require("../config/translate");
+import express from "express";
+import axios from "axios";
+import translateText from "../config/translate.js"; // Ensure .js extension is included
 
-// Open Library API Route
+const router = express.Router();
+
+// ✅ Open Library API Route
 router.get("/search", async (req, res) => {
     try {
         const query = req.query.q || "science"; // Default query
@@ -36,4 +37,4 @@ router.get("/search", async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router; // ✅ Use `export default`
