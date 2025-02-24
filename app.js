@@ -9,7 +9,7 @@ import bcrypt from "bcryptjs";
 import connectDB from "./config/db.js";
 import User from "./models/User.js";
 import Item from "./models/Item.js";
-import languageRoutes from "./routes/languageRoutes.js";
+
 // ✅ Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,18 +20,18 @@ const app = express();
 // ✅ Check required environment variables
 if (!process.env.MONGO_URI || !process.env.SESSION_SECRET) {
     console.error("❌ Missing required environment variables! Please set MONGO_URI and SESSION_SECRET in .env file.");
-    process.exit(1); // Stop the server if critical variables are missing
+    process.exit(1);
 }
 
 // ✅ Connect to MongoDB
 connectDB()
     .then(() => {
         console.log("✅ MongoDB Connected");
-        createAdminUser(); // Ensure admin exists when DB connects
+        createAdminUser();
     })
     .catch(err => {
         console.error("❌ MongoDB Connection Error:", err);
-        process.exit(1); // Stop server if DB connection fails
+        process.exit(1);
     });
 
 // ✅ Function to Create a Hardcoded Admin User
@@ -74,28 +74,30 @@ app.use(session({
         collectionName: "sessions"
     }),
     cookie: {
-        secure: process.env.NODE_ENV === "production", // Enable secure cookies in production
+        secure: process.env.NODE_ENV === "production",
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 // 24 hours
+        maxAge: 1000 * 60 * 60 * 24
     }
 }));
 
 // ✅ Set default language if not set
 app.use((req, res, next) => {
     if (!req.session.language) {
-        req.session.language = "en"; // Default to English
+        req.session.language = "en";
     }
-    res.locals.language = req.session.language; // Make available in all views
+    res.locals.language = req.session.language;
     next();
 });
 
 // ✅ Route to change language
-app.get("/change-language/:lang", (req, res) => {
+app.get("/set-language/:lang", (req, res) => {
     const { lang } = req.params;
     if (["en", "ru"].includes(lang)) {
         req.session.language = lang;
+        res.json({ success: `Language changed to ${lang}` });
+    } else {
+        res.status(400).json({ error: "Invalid language selection" });
     }
-    res.redirect(req.get("Referer") || "/"); // Redirect back to the same page
 });
 
 // ✅ Ensure `user` is available in all EJS views
@@ -121,7 +123,7 @@ const importRoutes = async () => {
         const openLibraryRoutes = (await import("./routes/openLibraryRoutes.js")).default;
         const adminRoutes = (await import("./routes/adminRoutes.js")).default;
         const historyRoutes = (await import("./routes/historyRoutes.js")).default;
-        
+        const languageRoutes = (await import("./routes/languageRoutes.js")).default;
 
         app.use("/", authRoutes);
         app.use("/books", bookRoutes);
@@ -133,20 +135,14 @@ const importRoutes = async () => {
         console.log("✅ All routes loaded successfully.");
     } catch (error) {
         console.error("❌ Error loading routes:", error);
-        process.exit(1); // Stop server if routes fail to load
+        process.exit(1);
     }
 };
 
-// ✅ Google Books Page
-app.get("/googlebooks", (req, res) => {
-    res.render("googleBooks");
-});
-
-// ✅ Home Route - Fetch Items Before Rendering Index Page
+// ✅ Home Route
 app.get("/", async (req, res) => {
     try {
         const items = await Item.find({ deletedAt: null });
-        console.log("📌 Items fetched:", items);
         res.render("index", { user: req.session.user, items, language: req.session.language });
     } catch (error) {
         console.error("❌ Error fetching items:", error);
@@ -154,13 +150,13 @@ app.get("/", async (req, res) => {
     }
 });
 
-// ✅ 404 Error Handling for Unrecognized Routes
+// ✅ 404 Error Handling
 app.use((req, res) => {
     console.error(`❌ 404 Not Found: ${req.originalUrl}`);
     res.status(404).json({ error: `404 Not Found: ${req.originalUrl}` });
 });
 
-// ✅ Debugging: Show Full Errors Instead of Generic Message
+// ✅ Debugging: Show Full Errors
 app.use((err, req, res, next) => {
     console.error("❌ ERROR:", err.stack);
     res.status(500).json({ error: "Internal Server Error", details: err.message });
@@ -168,7 +164,6 @@ app.use((err, req, res, next) => {
 
 // ✅ Start Server
 const PORT = process.env.PORT || 3000;
-
 importRoutes().then(() => {
     app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
 });
