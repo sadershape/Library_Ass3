@@ -1,4 +1,4 @@
-const translate = require("google-translate-api-x");
+const translate = require("@vitalets/google-translate-api");
 
 /**
  * Translates a given text, object, or array containing text fields.
