@@ -17,13 +17,22 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 const app = express();
 
+// ✅ Check required environment variables
+if (!process.env.MONGO_URI || !process.env.SESSION_SECRET) {
+    console.error("❌ Missing required environment variables! Please set MONGO_URI and SESSION_SECRET in .env file.");
+    process.exit(1); // Stop the server if critical variables are missing
+}
+
 // ✅ Connect to MongoDB
 connectDB()
     .then(() => {
         console.log("✅ MongoDB Connected");
         createAdminUser(); // Ensure admin exists when DB connects
     })
-    .catch(err => console.error("❌ MongoDB Connection Error:", err));
+    .catch(err => {
+        console.error("❌ MongoDB Connection Error:", err);
+        process.exit(1); // Stop server if DB connection fails
+    });
 
 // ✅ Function to Create a Hardcoded Admin User
 const createAdminUser = async () => {
@@ -57,14 +66,18 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // ✅ Configure sessions with MongoDB storage
 app.use(session({
-    secret: process.env.SESSION_SECRET || "default_secret",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
         mongoUrl: process.env.MONGO_URI,
         collectionName: "sessions"
     }),
-    cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 24 }
+    cookie: {
+        secure: process.env.NODE_ENV === "production", // Enable secure cookies in production
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 // 24 hours
+    }
 }));
 
 // ✅ Set default language if not set
@@ -79,7 +92,7 @@ app.use((req, res, next) => {
 // ✅ Route to change language
 app.get("/change-language/:lang", (req, res) => {
     const { lang } = req.params;
-    if (lang === "en" || lang === "ru") {
+    if (["en", "ru"].includes(lang)) {
         req.session.language = lang;
     }
     res.redirect(req.get("Referer") || "/"); // Redirect back to the same page
@@ -100,25 +113,32 @@ app.use((req, res, next) => {
     next();
 });
 
-// ✅ Dynamic Route Imports (since require() is not allowed)
+// ✅ Dynamic Route Imports (with Error Handling)
 const importRoutes = async () => {
-    const authRoutes = (await import("./routes/authRoutes.js")).default;
-    const bookRoutes = (await import("./routes/bookRoutes.js")).default;
-    const openLibraryRoutes = (await import("./routes/openLibraryRoutes.js")).default;
-    const weatherRoutes = (await import("./routes/weatherRoutes.js")).default;
-    const currencyRoutes = (await import("./routes/currencyRoutes.js")).default;
-    const adminRoutes = (await import("./routes/adminRoutes.js")).default;
-    const historyRoutes = (await import("./routes/historyRoutes.js")).default;
-    const opengraphRoutes = (await import("./routes/opengraphRoutes.js")).default;
+    try {
+        const authRoutes = (await import("./routes/authRoutes.js")).default;
+        const bookRoutes = (await import("./routes/bookRoutes.js")).default;
+        const openLibraryRoutes = (await import("./routes/openLibraryRoutes.js")).default;
+        const weatherRoutes = (await import("./routes/weatherRoutes.js")).default;
+        const currencyRoutes = (await import("./routes/currencyRoutes.js")).default;
+        const adminRoutes = (await import("./routes/adminRoutes.js")).default;
+        const historyRoutes = (await import("./routes/historyRoutes.js")).default;
+        const opengraphRoutes = (await import("./routes/opengraphRoutes.js")).default;
 
-    app.use("/", authRoutes);
-    app.use("/books", bookRoutes);
-    app.use("/api/openlibrary", openLibraryRoutes);
-    app.use("/weather", weatherRoutes);
-    app.use("/currency", currencyRoutes);
-    app.use("/admin", adminRoutes);
-    app.use("/history", historyRoutes);
-    app.use("/opengraph", opengraphRoutes);
+        app.use("/", authRoutes);
+        app.use("/books", bookRoutes);
+        app.use("/api/openlibrary", openLibraryRoutes);
+        app.use("/weather", weatherRoutes);
+        app.use("/currency", currencyRoutes);
+        app.use("/admin", adminRoutes);
+        app.use("/history", historyRoutes);
+        app.use("/opengraph", opengraphRoutes);
+
+        console.log("✅ All routes loaded successfully.");
+    } catch (error) {
+        console.error("❌ Error loading routes:", error);
+        process.exit(1); // Stop server if routes fail to load
+    }
 };
 
 // ✅ Google Books Page
