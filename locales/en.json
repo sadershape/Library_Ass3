@@ -3,9 +3,10 @@
   "welcome_message": "Welcome to the Library",
   "login": "Login",
   "logout": "Logout",
-  "books": "Books"
+  "books": "Books",
   "home": "Home",
   "gutenberg": "Gutenberg Books",
   "openLibrary": "Open Library Books",
-  "googleBooks": "Google Books"
+  "googleBooks": "Google Books",
+  "admin": "Admin"
 }
