@@ -9,7 +9,7 @@ import bcrypt from "bcryptjs";
 import connectDB from "./config/db.js";
 import User from "./models/User.js";
 import Item from "./models/Item.js";
-
+import languageRoutes from "./routes/languageRoutes.js";
 // ✅ Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -128,6 +128,7 @@ const importRoutes = async () => {
         app.use("/api/openlibrary", openLibraryRoutes);
         app.use("/admin", adminRoutes);
         app.use("/history", historyRoutes);
+        app.use("/", languageRoutes);
 
         console.log("✅ All routes loaded successfully.");
     } catch (error) {
