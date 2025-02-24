@@ -1,6 +1,6 @@
 import express from "express";
 import axios from "axios";
-import translateText from "../config/translate.js"; // Ensure .js extension is included
+import { translateText } from "../config/translate.js"; // ✅ Correct import
 
 const router = express.Router();
 
