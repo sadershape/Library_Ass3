@@ -4,4 +4,8 @@
   "login": "Login",
   "logout": "Logout",
   "books": "Books"
+  "home": "Home",
+  "gutenberg": "Gutenberg Books",
+  "openLibrary": "Open Library Books",
+  "googleBooks": "Google Books"
 }
