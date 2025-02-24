@@ -1,14 +1,20 @@
-require("dotenv").config();
-const express = require("express");
-const mongoose = require("mongoose");
-const session = require("express-session");
-const MongoStore = require("connect-mongo");
-const path = require("path");
-const connectDB = require("./config/db");
-const bcrypt = require("bcryptjs");
-const User = require("./models/User");
-const Item = require("./models/Item");
+import dotenv from "dotenv";
+import express from "express";
+import mongoose from "mongoose";
+import session from "express-session";
+import MongoStore from "connect-mongo";
+import path from "path";
+import { fileURLToPath } from "url";
+import bcrypt from "bcryptjs";
+import connectDB from "./config/db.js";
+import User from "./models/User.js";
+import Item from "./models/Item.js";
 
+// ✅ Fix __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config();
 const app = express();
 
 // ✅ Connect to MongoDB
@@ -94,15 +100,26 @@ app.use((req, res, next) => {
     next();
 });
 
-// ✅ Load Routes
-app.use("/", require("./routes/authRoutes"));
-app.use("/books", require("./routes/bookRoutes"));
-app.use("/api/openlibrary", require("./routes/openLibraryRoutes"));
-app.use("/weather", require("./routes/weatherRoutes"));
-app.use("/currency", require("./routes/currencyRoutes"));
-app.use("/admin", require("./routes/adminRoutes"));
-app.use("/history", require("./routes/historyRoutes"));
-app.use("/opengraph", require("./routes/opengraphRoutes"));
+// ✅ Dynamic Route Imports (since require() is not allowed)
+const importRoutes = async () => {
+    const authRoutes = (await import("./routes/authRoutes.js")).default;
+    const bookRoutes = (await import("./routes/bookRoutes.js")).default;
+    const openLibraryRoutes = (await import("./routes/openLibraryRoutes.js")).default;
+    const weatherRoutes = (await import("./routes/weatherRoutes.js")).default;
+    const currencyRoutes = (await import("./routes/currencyRoutes.js")).default;
+    const adminRoutes = (await import("./routes/adminRoutes.js")).default;
+    const historyRoutes = (await import("./routes/historyRoutes.js")).default;
+    const opengraphRoutes = (await import("./routes/opengraphRoutes.js")).default;
+
+    app.use("/", authRoutes);
+    app.use("/books", bookRoutes);
+    app.use("/api/openlibrary", openLibraryRoutes);
+    app.use("/weather", weatherRoutes);
+    app.use("/currency", currencyRoutes);
+    app.use("/admin", adminRoutes);
+    app.use("/history", historyRoutes);
+    app.use("/opengraph", opengraphRoutes);
+};
 
 // ✅ Google Books Page
 app.get("/googlebooks", (req, res) => {
@@ -135,4 +152,7 @@ app.use((err, req, res, next) => {
 
 // ✅ Start Server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+
+importRoutes().then(() => {
+    app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+});
