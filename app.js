@@ -119,20 +119,15 @@ const importRoutes = async () => {
         const authRoutes = (await import("./routes/authRoutes.js")).default;
         const bookRoutes = (await import("./routes/bookRoutes.js")).default;
         const openLibraryRoutes = (await import("./routes/openLibraryRoutes.js")).default;
-        const weatherRoutes = (await import("./routes/weatherRoutes.js")).default;
-        const currencyRoutes = (await import("./routes/currencyRoutes.js")).default;
         const adminRoutes = (await import("./routes/adminRoutes.js")).default;
         const historyRoutes = (await import("./routes/historyRoutes.js")).default;
-        const opengraphRoutes = (await import("./routes/opengraphRoutes.js")).default;
+        
 
         app.use("/", authRoutes);
         app.use("/books", bookRoutes);
         app.use("/api/openlibrary", openLibraryRoutes);
-        app.use("/weather", weatherRoutes);
-        app.use("/currency", currencyRoutes);
         app.use("/admin", adminRoutes);
         app.use("/history", historyRoutes);
-        app.use("/opengraph", opengraphRoutes);
 
         console.log("✅ All routes loaded successfully.");
     } catch (error) {
