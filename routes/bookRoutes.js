@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
+const translateText = require("../config/translate");
 
 const GUTENDEX_API_URL = "https://gutendex.com/books/";
 const OPEN_LIBRARY_API_URL = "https://openlibrary.org/search.json";
@@ -13,9 +14,19 @@ router.get("/", async (req, res) => {
         console.log("📌 Search Query:", searchQuery);
 
         const response = await axios.get(`${GUTENDEX_API_URL}?search=${encodeURIComponent(searchQuery)}`);
-        const books = response.data.results || [];
+        let books = response.data.results || [];
 
-        res.render("books", { books, user: req.session.user });
+        // Translate book titles if Russian is selected
+        if (req.session.language === "ru") {
+            for (let i = 0; i < books.length; i++) {
+                books[i].title = await translateText(books[i].title, "ru");
+                if (books[i].authors.length) {
+                    books[i].authors = await translateText(books[i].authors[0].name, "ru");
+                }
+            }
+        }
+
+        res.render("books", { books, user: req.session.user, language: req.session.language });
     } catch (error) {
         console.error("❌ Error fetching books from Gutenberg API:", error.message);
         res.status(500).json({ error: "Error retrieving books from Gutenberg API." });
@@ -30,9 +41,19 @@ router.get("/openlibrary", async (req, res) => {
         console.log("📌 Search Query:", searchQuery);
 
         const response = await axios.get(`${OPEN_LIBRARY_API_URL}?q=${encodeURIComponent(searchQuery)}`);
-        const books = response.data.docs || [];
+        let books = response.data.docs || [];
 
-        res.render("openLibrary", { books, user: req.session.user });
+        // Translate book titles if Russian is selected
+        if (req.session.language === "ru") {
+            for (let i = 0; i < books.length; i++) {
+                books[i].title = await translateText(books[i].title, "ru");
+                if (books[i].author_name) {
+                    books[i].author_name = await translateText(books[i].author_name.join(", "), "ru");
+                }
+            }
+        }
+
+        res.render("openLibrary", { books, user: req.session.user, language: req.session.language });
     } catch (error) {
         console.error("❌ Error fetching books from Open Library API:", error.message);
         res.status(500).render("error", { message: "Error retrieving books from Open Library API." });
