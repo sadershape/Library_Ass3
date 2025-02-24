@@ -5,6 +5,7 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
 import bcrypt from "bcryptjs";
 import connectDB from "./config/db.js";
 import User from "./models/User.js";
@@ -55,9 +56,14 @@ const createAdminUser = async () => {
     }
 };
 
-// ✅ Set up EJS as the view engine
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
+// ✅ Load Translations Function
+const loadTranslations = (language) => {
+    const filePath = path.join(__dirname, "locales", `${language}.json`);
+    if (fs.existsSync(filePath)) {
+        return JSON.parse(fs.readFileSync(filePath, "utf8"));
+    }
+    return {}; // Return an empty object if translation file is missing
+};
 
 // ✅ Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -80,46 +86,30 @@ app.use(session({
     }
 }));
 
-// ✅ Set default language if not set
+// ✅ Set and Load Translations Middleware
 app.use((req, res, next) => {
     if (!req.session.language) {
         req.session.language = "en";
     }
     res.locals.language = req.session.language;
+    res.locals.translations = loadTranslations(req.session.language);
     next();
 });
 
-// ✅ Language change route with translation
-const messages = {
-    en: { success: "Language changed to English" },
-    ru: { success: "Язык изменен на русский" }
-};
-
+// ✅ Language Change Route
 app.get("/set-language/:lang", (req, res) => {
     const { lang } = req.params;
     if (["en", "ru"].includes(lang)) {
         req.session.language = lang;
-        if (req.get("Accept") === "application/json") {
-            return res.json({ success: messages[lang].success });
-        }
-        req.session.success = messages[lang].success;
+        res.locals.translations = loadTranslations(lang);
         return res.redirect(req.get("Referer") || "/");
-    } 
+    }
     res.status(400).json({ error: "Invalid language selection" });
 });
 
 // ✅ Ensure `user` is available in all EJS views
 app.use((req, res, next) => {
     res.locals.user = req.session.user || null;
-    next();
-});
-
-// ✅ Custom Flash Message Middleware
-app.use((req, res, next) => {
-    res.locals.success = req.session.success || null;
-    res.locals.error = req.session.error || null;
-    delete req.session.success;
-    delete req.session.error;
     next();
 });
 
@@ -131,14 +121,12 @@ const importRoutes = async () => {
         const openLibraryRoutes = (await import("./routes/openLibraryRoutes.js")).default;
         const adminRoutes = (await import("./routes/adminRoutes.js")).default;
         const historyRoutes = (await import("./routes/historyRoutes.js")).default;
-        const languageRoutes = (await import("./routes/languageRoutes.js")).default;
 
         app.use("/", authRoutes);
         app.use("/books", bookRoutes);
         app.use("/api/openlibrary", openLibraryRoutes);
         app.use("/admin", adminRoutes);
         app.use("/history", historyRoutes);
-        app.use("/", languageRoutes);
 
         console.log("✅ All routes loaded successfully.");
     } catch (error) {
@@ -151,10 +139,10 @@ const importRoutes = async () => {
 app.get("/", async (req, res) => {
     try {
         const items = await Item.find({ deletedAt: null });
-        res.render("index", { user: req.session.user, items, language: req.session.language });
+        res.render("index", { user: req.session.user, items, translations: res.locals.translations });
     } catch (error) {
         console.error("❌ Error fetching items:", error);
-        res.render("index", { user: req.session.user, items: [], language: req.session.language });
+        res.render("index", { user: req.session.user, items: [], translations: res.locals.translations });
     }
 });
 
