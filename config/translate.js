@@ -1,37 +1,41 @@
-const translate = require("@vitalets/google-translate-api");
+const translate = require("google-translate-api-x");
 
 /**
- * Translates a given text or object containing text fields.
- * @param {Object|string} data - The data to translate (can be a string or object).
+ * Translates a given text, object, or array containing text fields.
+ * @param {Object|string|Array} data - The data to translate (can be a string, object, or array).
  * @param {string} targetLang - The target language code ("ru" or "en").
- * @returns {Promise<Object|string>} - Translated text or object.
+ * @returns {Promise<Object|string|Array>} - Translated text, object, or array.
  */
 async function translateText(data, targetLang) {
     if (targetLang === "en") return data; // Skip translation if English
 
-    if (typeof data === "string") {
-        try {
+    try {
+        if (typeof data === "string") {
             const res = await translate(data, { to: targetLang });
             return res.text;
-        } catch (err) {
-            console.error("Translation error:", err);
-            return data; // Return original if translation fails
         }
+
+        if (Array.isArray(data)) {
+            return Promise.all(data.map(item => translateText(item, targetLang)));
+        }
+
+        if (typeof data === "object" && data !== null) {
+            const translatedEntries = await Promise.all(
+                Object.entries(data).map(async ([key, value]) => {
+                    if (typeof value === "string") {
+                        return [key, await translateText(value, targetLang)];
+                    }
+                    return [key, value]; // Keep non-text fields as they are
+                })
+            );
+
+            return Object.fromEntries(translatedEntries);
+        }
+    } catch (err) {
+        console.error("❌ Translation error:", err);
     }
 
-    if (typeof data === "object" && data !== null) {
-        let translatedData = {};
-        for (const key in data) {
-            if (typeof data[key] === "string") {
-                translatedData[key] = await translateText(data[key], targetLang);
-            } else {
-                translatedData[key] = data[key]; // Keep non-text fields as they are
-            }
-        }
-        return translatedData;
-    }
-
-    return data; // Return as is for unsupported types
+    return data; // Return original data if an error occurs
 }
 
 module.exports = translateText;
