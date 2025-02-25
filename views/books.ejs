@@ -4,21 +4,33 @@
     <link rel="stylesheet" href="/styles.css">
 </head>
 
-<h2>Book Search</h2>
-<form action="/books" method="GET">
-    <input type="text" name="q" placeholder="Search for books" required>
-    <button type="submit">Search</button>
-</form>
+<div class="container">
+    <h2>Book Search</h2>
+    <form action="/books" method="GET" class="search-form">
+        <input type="text" name="q" placeholder="Search for books" required>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
 
-<ul>
-    <% books.forEach(book => { %>
-    <li>
-        <h3><%= book.title %></h3>
-        <p>Author: <%= book.authors.map(a => a.name).join(", ") %></p>
-        <p>Language: <%= book.languages.join(", ") %></p>
-        <p>Download: <a href="<%= book.formats["text/html"] || "#" %>" target="_blank">Read Online</a></p>
-    </li>
-    <% }); %>
-</ul>
+    <% if (books.length > 0) { %>
+        <ul class="book-list">
+            <% books.forEach(book => { %>
+                <li class="book-item">
+                    <h3><%= book.title %></h3>
+                    <p><strong>Author:</strong> <%= book.authors.map(a => a.name).join(", ") %></p>
+                    <p><strong>Language:</strong> <%= book.languages.join(", ") %></p>
+                    <p><strong>Download:</strong> 
+                        <% if (book.formats["text/html"]) { %>
+                            <a href="<%= book.formats["text/html"] %>" target="_blank" class="btn btn-secondary">Read Online</a>
+                        <% } else { %>
+                            <span class="text-muted">Not available</span>
+                        <% } %>
+                    </p>
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p class="no-results">No books found. Try a different search.</p>
+    <% } %>
+</div>
 
 <%- include("footer") %>
