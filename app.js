@@ -135,6 +135,7 @@ const importRoutes = async () => {
 
         app.use("/", authRoutes);
         app.use("/books", bookRoutes);
+        app.use("/books/openlibrary", openLibraryRoutes);
         app.use("/books/openLibrary", openLibraryRoutes);
         app.use("/admin", adminRoutes);
         app.use("/history", historyRoutes);
