@@ -57,15 +57,6 @@ const createAdminUser = async () => {
     }
 };
 
-const loadTranslations = (language) => {
-    const filePath = path.join(__dirname, "locales", `${language}.json`);
-    if (fs.existsSync(filePath)) {
-        return JSON.parse(fs.readFileSync(filePath, "utf8"));
-    }
-    console.warn(`⚠️ Missing translations for ${language}. Using fallback.`);
-    return { nav: { login: "Login", logout: "Logout" } };
-};
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -84,32 +75,6 @@ app.use(session({
         maxAge: 1000 * 60 * 60 * 24
     }
 }));
-
-app.use((req, res, next) => {
-    if (!req.session.language) {
-        req.session.language = "en";
-    }
-    res.locals.language = req.session.language;
-    res.locals.translations = loadTranslations(req.session.language);
-    next();
-});
-
-app.get("/set-language/:lang", (req, res) => {
-    const { lang } = req.params;
-    if (["en", "ru"].includes(lang)) {
-        req.session.language = lang;
-        req.session.save(err => {
-            if (err) {
-                console.error("❌ Error saving session:", err);
-                return res.status(500).json({ error: "Failed to save session" });
-            }
-            console.log("🌍 Language changed to:", req.session.language);
-            return res.redirect(req.get("Referer") || "/");
-        });
-    } else {
-        res.status(400).json({ error: "Invalid language selection" });
-    }
-});
 
 app.use((req, res, next) => {
     res.locals.user = req.session.user || null;
@@ -155,18 +120,14 @@ app.get("/", async (req, res) => {
         res.render("index", {
             user: req.session.user,
             items,
-            adminSection: adminSection || {},
-            translations: res.locals.translations,
-            language: res.locals.language
+            adminSection: adminSection || {}
         });
     } catch (error) {
         console.error("❌ Error fetching data:", error);
         res.render("index", {
             user: req.session.user,
             items: [],
-            adminSection: {},
-            translations: res.locals.translations,
-            language: res.locals.language
+            adminSection: {}
         });
     }
 });
