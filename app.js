@@ -118,11 +118,22 @@ app.use((req, res, next) => {
 
 const importRoutes = async () => {
     try {
+        console.log("📦 Importing routes...");
+
         const authRoutes = (await import("./routes/authRoutes.js")).default;
+        console.log("✅ authRoutes loaded");
+
         const bookRoutes = (await import("./routes/bookRoutes.js")).default;
+        console.log("✅ bookRoutes loaded");
+
         const openLibraryRoutes = (await import("./routes/openLibraryRoutes.js")).default;
+        console.log("✅ openLibraryRoutes loaded");
+
         const adminRoutes = (await import("./routes/adminRoutes.js")).default;
+        console.log("✅ adminRoutes loaded");
+
         const historyRoutes = (await import("./routes/historyRoutes.js")).default;
+        console.log("✅ historyRoutes loaded");
 
         app.use("/", authRoutes);
         app.use("/books", bookRoutes);
@@ -130,7 +141,7 @@ const importRoutes = async () => {
         app.use("/admin", adminRoutes);
         app.use("/history", historyRoutes);
 
-        console.log("✅ All routes loaded successfully.");
+        console.log("🚀 All routes loaded successfully.");
     } catch (error) {
         console.error("❌ Error loading routes:", error);
         process.exit(1);
