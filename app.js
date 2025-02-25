@@ -67,7 +67,7 @@ const loadTranslations = (language) => {
     if (fs.existsSync(filePath)) {
         return JSON.parse(fs.readFileSync(filePath, "utf8"));
     }
-    return {}; // Return an empty object if translation file is missing
+    return { nav: { login: "Login", logout: "Logout" } }; // ✅ Provide default values
 };
 
 // ✅ Middleware
@@ -98,6 +98,7 @@ app.use((req, res, next) => {
     }
     res.locals.language = req.session.language;
     res.locals.translations = loadTranslations(req.session.language);
+    console.log("🔍 Loaded Translations:", res.locals.translations); // Debugging
     next();
 });
 
