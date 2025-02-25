@@ -8,7 +8,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <%- include("navbar") %>
+    <% if (typeof translations !== 'undefined') { %>
+        <%- include("navbar", { translations }) %>
+    <% } else { %>
+        <%- include("navbar", { translations: { home: 'Home', gutenberg: 'Gutenberg Books', openLibrary: 'Open Library', googleBooks: 'Google Books' } }) %>
+    <% } %>
 
     <div class="container text-center">
         <section class="editable-section">
@@ -24,39 +28,23 @@
             <p><%= language === 'en' ? 'Choose the right tool for your needs:' : 'Выберите подходящий инструмент:' %></p>
 
             <div class="row">
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h3 class="card-title"><%= language === 'en' ? 'Gutenberg Books' : 'Книги Гутенберга' %></h3>
-                            <p class="card-text">
-                                <%= language === 'en' ? 'Access free eBooks from Project Gutenberg.' : 'Доступ к бесплатным книгам проекта Гутенберг.' %>
-                            </p>
-                            <a href="/books" class="btn btn-primary"><%= language === 'en' ? 'Explore' : 'Исследовать' %></a>
+                <% const searchOptions = [
+                    { path: '/books', title_en: 'Gutenberg Books', title_ru: 'Книги Гутенберга', description_en: 'Access free eBooks from Project Gutenberg.', description_ru: 'Доступ к бесплатным книгам проекта Гутенберг.' },
+                    { path: '/books/openlibrary', title_en: 'Open Library', title_ru: 'Открытая библиотека', description_en: 'Search Open Library’s database.', description_ru: 'Поиск в базе данных Open Library.' },
+                    { path: '/googlebooks', title_en: 'Google Books', title_ru: 'Книги Google', description_en: 'Browse Google Books collection.', description_ru: 'Просмотр коллекции Google Books.' }
+                ]; %>
+
+                <% searchOptions.forEach(option => { %>
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h3 class="card-title"><%= language === 'en' ? option.title_en : option.title_ru %></h3>
+                                <p class="card-text"><%= language === 'en' ? option.description_en : option.description_ru %></p>
+                                <a href="<%= option.path %>" class="btn btn-primary"><%= language === 'en' ? 'Explore' : 'Исследовать' %></a>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h3 class="card-title"><%= language === 'en' ? 'Open Library' : 'Открытая библиотека' %></h3>
-                            <p class="card-text">
-                                <%= language === 'en' ? 'Search Open Library’s database.' : 'Поиск в базе данных Open Library.' %>
-                            </p>
-                            <a href="/books/openlibrary" class="btn btn-primary"><%= language === 'en' ? 'Search' : 'Поиск' %></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h3 class="card-title"><%= language === 'en' ? 'Google Books' : 'Книги Google' %></h3>
-                            <p class="card-text">
-                                <%= language === 'en' ? 'Browse Google Books collection.' : 'Просмотр коллекции Google Books.' %>
-                            </p>
-                            <a href="/googlebooks" class="btn btn-primary"><%= language === 'en' ? 'Browse' : 'Просмотр' %></a>
-                        </div>
-                    </div>
-                </div>
+                <% }); %>
             </div>
         </section>
 
