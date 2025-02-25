@@ -64,7 +64,7 @@
         <a href="/books"><%= translations.gutenberg %></a>
         <a href="/books/openLibrary"><%= translations.openLibrary %></a>
         <a href="/googlebooks"><%= translations.googleBooks %></a>
-        <a href="/admin"><%= translations.admin %></a>
+        <a href="/admin"><%= translations.admin || 'Admin' %></a>
     </div>
 
     <div class="language-switcher">
@@ -77,9 +77,9 @@
 
     <div>
         <% if (user) { %>
-            <a href="/logout"><%= translations.nav.logout %></a>
+            <a href="/logout"><%= translations.nav && translations.nav.logout ? translations.nav.logout : 'Logout' %></a>
         <% } else { %>
-            <a href="/login"><%= translations.nav.login %></a>
+            <a href="/login"><%= translations.nav && translations.nav.login ? translations.nav.login : 'Login' %></a>
         <% } %>
     </div>
 </nav>
