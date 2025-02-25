@@ -120,14 +120,16 @@ app.get("/", async (req, res) => {
         res.render("index", {
             user: req.session.user,
             items,
-            adminSection: adminSection || {}
+            adminSection: adminSection || {},
+            language: "en" // Добавлено для исправления ошибки
         });
     } catch (error) {
         console.error("❌ Error fetching data:", error);
         res.render("index", {
             user: req.session.user,
             items: [],
-            adminSection: {}
+            adminSection: {},
+            language: "en" // Добавлено для исправления ошибки
         });
     }
 });
