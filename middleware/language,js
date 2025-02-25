@@ -1,4 +1,16 @@
 module.exports = (req, res, next) => {
-    res.locals.language = req.session.language || "en";
+    if (!req.session.language) {
+        req.session.language = "en";
+    }
+
+    req.session.save(err => {
+        if (err) {
+            console.error("❌ Error saving session:", err);
+        }
+    });
+
+    res.locals.language = req.session.language;
+    console.log("📝 Current language:", res.locals.language); // Debugging
+
     next();
 };
