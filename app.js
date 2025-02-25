@@ -130,14 +130,12 @@ const importRoutes = async () => {
         const authRoutes = (await import("./routes/authRoutes.js")).default;
         const bookRoutes = (await import("./routes/bookRoutes.js")).default;
         const openLibraryRoutes = (await import("./routes/openLibraryRoutes.js")).default;
-        const googleBooksRoutes = (await import("./routes/googleBooksRoutes.js")).default;
         const adminRoutes = (await import("./routes/adminRoutes.js")).default;
         const historyRoutes = (await import("./routes/historyRoutes.js")).default;
 
         app.use("/", authRoutes);
         app.use("/books", bookRoutes);
         app.use("/books/openLibrary", openLibraryRoutes);
-        app.use("/books/googleBooks", googleBooksRoutes);
         app.use("/admin", adminRoutes);
         app.use("/history", historyRoutes);
 
