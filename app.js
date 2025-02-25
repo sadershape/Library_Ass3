@@ -10,6 +10,7 @@ import bcrypt from "bcryptjs";
 import connectDB from "./config/db.js";
 import User from "./models/User.js";
 import Item from "./models/Item.js";
+import ejs from "ejs";
 
 // ✅ Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -17,6 +18,10 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config();
 const app = express();
+
+// ✅ Set view engine to EJS
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 // ✅ Check required environment variables
 if (!process.env.MONGO_URI || !process.env.SESSION_SECRET) {
