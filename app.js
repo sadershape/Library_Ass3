@@ -22,13 +22,11 @@ const app = express();
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// ✅ Check Required Environment Variables
 if (!process.env.MONGO_URI || !process.env.SESSION_SECRET) {
     console.error("❌ Missing required environment variables! Please set MONGO_URI and SESSION_SECRET in .env file.");
     process.exit(1);
 }
 
-// ✅ Connect to MongoDB
 connectDB()
     .then(() => {
         console.log("✅ MongoDB Connected");
@@ -39,7 +37,6 @@ connectDB()
         process.exit(1);
     });
 
-// ✅ Create Admin User if Not Exists
 const createAdminUser = async () => {
     try {
         const existingAdmin = await User.findOne({ username: "admin" });
@@ -60,7 +57,6 @@ const createAdminUser = async () => {
     }
 };
 
-// ✅ Load Translations
 const loadTranslations = (language) => {
     const filePath = path.join(__dirname, "locales", `${language}.json`);
     if (fs.existsSync(filePath)) {
@@ -70,7 +66,6 @@ const loadTranslations = (language) => {
     return { nav: { login: "Login", logout: "Logout" } };
 };
 
-// ✅ Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -90,7 +85,6 @@ app.use(session({
     }
 }));
 
-// ✅ Ensure Language is Set in Session
 app.use((req, res, next) => {
     if (!req.session.language) {
         req.session.language = "en";
@@ -100,7 +94,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// ✅ Fix Language Switching Route
 app.get("/set-language/:lang", (req, res) => {
     const { lang } = req.params;
     if (["en", "ru"].includes(lang)) {
@@ -118,13 +111,11 @@ app.get("/set-language/:lang", (req, res) => {
     }
 });
 
-// ✅ Ensure `user` is Available in All Views
 app.use((req, res, next) => {
     res.locals.user = req.session.user || null;
     next();
 });
 
-// ✅ Import Routes
 const importRoutes = async () => {
     try {
         const authRoutes = (await import("./routes/authRoutes.js")).default;
@@ -146,7 +137,6 @@ const importRoutes = async () => {
     }
 };
 
-// ✅ Homepage Route
 app.get("/", async (req, res) => {
     try {
         const items = await Item.find({ deletedAt: null });
@@ -170,19 +160,16 @@ app.get("/", async (req, res) => {
     }
 });
 
-// ✅ Handle 404 Errors
 app.use((req, res) => {
     console.error(`❌ 404 Not Found: ${req.originalUrl}`);
     res.status(404).json({ error: `404 Not Found: ${req.originalUrl}` });
 });
 
-// ✅ Handle Internal Server Errors
 app.use((err, req, res, next) => {
     console.error("❌ ERROR:", err.stack);
     res.status(500).json({ error: "Internal Server Error", details: err.message });
 });
 
-// ✅ Start Server
 const startServer = async () => {
     try {
         await importRoutes();
