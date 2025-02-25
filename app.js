@@ -183,7 +183,15 @@ app.use((err, req, res, next) => {
 });
 
 // ✅ Start Server
-const PORT = process.env.PORT || 3000;
-importRoutes().then(() => {
-    app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
-});
+const startServer = async () => {
+    try {
+        await importRoutes();
+        const PORT = process.env.PORT || 3000;
+        app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+    } catch (error) {
+        console.error("❌ Failed to start server:", error);
+        process.exit(1);
+    }
+};
+
+startServer();
