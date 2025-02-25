@@ -10,26 +10,23 @@ import bcrypt from "bcryptjs";
 import connectDB from "./config/db.js";
 import User from "./models/User.js";
 import Item from "./models/Item.js";
+import AdminSection from "./models/AdminSection.js";
 import ejs from "ejs";
 
-// ✅ Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config();
 const app = express();
 
-// ✅ Set view engine to EJS
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// ✅ Check required environment variables
 if (!process.env.MONGO_URI || !process.env.SESSION_SECRET) {
     console.error("❌ Missing required environment variables! Please set MONGO_URI and SESSION_SECRET in .env file.");
     process.exit(1);
 }
 
-// ✅ Connect to MongoDB
 connectDB()
     .then(() => {
         console.log("✅ MongoDB Connected");
@@ -40,7 +37,6 @@ connectDB()
         process.exit(1);
     });
 
-// ✅ Function to Create a Hardcoded Admin User
 const createAdminUser = async () => {
     try {
         const existingAdmin = await User.findOne({ username: "admin" });
@@ -61,21 +57,18 @@ const createAdminUser = async () => {
     }
 };
 
-// ✅ Load Translations Function
 const loadTranslations = (language) => {
     const filePath = path.join(__dirname, "locales", `${language}.json`);
     if (fs.existsSync(filePath)) {
         return JSON.parse(fs.readFileSync(filePath, "utf8"));
     }
-    return { nav: { login: "Login", logout: "Logout" } }; // ✅ Provide default values
+    return { nav: { login: "Login", logout: "Logout" } };
 };
 
-// ✅ Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ Configure sessions with MongoDB storage
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
@@ -91,18 +84,15 @@ app.use(session({
     }
 }));
 
-// ✅ Set and Load Translations Middleware
 app.use((req, res, next) => {
     if (!req.session.language) {
         req.session.language = "en";
     }
     res.locals.language = req.session.language;
     res.locals.translations = loadTranslations(req.session.language);
-    console.log("🔍 Loaded Translations:", res.locals.translations); // Debugging
     next();
 });
 
-// ✅ Language Change Route
 app.get("/set-language/:lang", (req, res) => {
     const { lang } = req.params;
     if (["en", "ru"].includes(lang)) {
@@ -113,13 +103,11 @@ app.get("/set-language/:lang", (req, res) => {
     res.status(400).json({ error: "Invalid language selection" });
 });
 
-// ✅ Ensure `user` is available in all EJS views
 app.use((req, res, next) => {
     res.locals.user = req.session.user || null;
     next();
 });
 
-// ✅ Dynamic Route Imports (with Error Handling)
 const importRoutes = async () => {
     try {
         const authRoutes = (await import("./routes/authRoutes.js")).default;
@@ -141,30 +129,39 @@ const importRoutes = async () => {
     }
 };
 
-// ✅ Home Route
 app.get("/", async (req, res) => {
     try {
         const items = await Item.find({ deletedAt: null });
-        res.render("index", { user: req.session.user, items, translations: res.locals.translations });
+        const adminSection = await AdminSection.findOne();
+        res.render("index", {
+            user: req.session.user,
+            items,
+            adminSection: adminSection || {},
+            translations: res.locals.translations,
+            language: res.locals.language
+        });
     } catch (error) {
-        console.error("❌ Error fetching items:", error);
-        res.render("index", { user: req.session.user, items: [], translations: res.locals.translations });
+        console.error("❌ Error fetching data:", error);
+        res.render("index", {
+            user: req.session.user,
+            items: [],
+            adminSection: {},
+            translations: res.locals.translations,
+            language: res.locals.language
+        });
     }
 });
 
-// ✅ 404 Error Handling
 app.use((req, res) => {
     console.error(`❌ 404 Not Found: ${req.originalUrl}`);
     res.status(404).json({ error: `404 Not Found: ${req.originalUrl}` });
 });
 
-// ✅ Debugging: Show Full Errors
 app.use((err, req, res, next) => {
     console.error("❌ ERROR:", err.stack);
     res.status(500).json({ error: "Internal Server Error", details: err.message });
 });
 
-// ✅ Start Server
 const PORT = process.env.PORT || 3000;
 importRoutes().then(() => {
     app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
