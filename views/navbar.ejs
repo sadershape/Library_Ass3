@@ -3,32 +3,71 @@
         background-color: #0044cc; /* Dark blue background */
         padding: 15px 20px;
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap; /* Ensures it wraps nicely on smaller screens */
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 20px;
     }
 
     nav a {
         text-decoration: none;
-        color: white; /* White text for contrast */
+        color: white;
         font-size: 18px;
         padding: 10px 15px;
-        transition: background 0.3s ease-in-out;
-        border-radius: 5px;
+        transition: color 0.3s ease-in-out;
+        position: relative;
+    }
+
+    nav a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -3px;
+        width: 100%;
+        height: 2px;
+        background-color: white;
+        transform: scaleX(0);
+        transition: transform 0.3s ease-in-out;
     }
 
     nav a:hover {
-        background-color: rgba(255, 255, 255, 0.2); /* Subtle hover effect */
+        color: #ffdd57; /* Brighter yellowish color on hover */
+    }
+
+    nav a:hover::after {
+        transform: scaleX(1);
+    }
+
+    .language-switcher {
+        font-size: 18px;
+        color: white;
+    }
+
+    .language-switcher a {
+        text-decoration: none;
+        font-weight: bold;
+        color: white;
+    }
+
+    .language-switcher a:hover {
+        text-decoration: underline;
     }
 </style>
 
 <nav>
-    <a href="/"><%= translations.home %></a>
-    <a href="/books"><%= translations.gutenberg %></a>
-    <a href="/books/openLibrary"><%= translations.openLibrary %></a>
-    <a href="/googlebooks"><%= translations.googleBooks %></a>
-    <a href="/admin"><%= translations.admin %></a>
+    <div class="nav-links">
+        <a href="/"><%= translations.home %></a>
+        <a href="/books"><%= translations.gutenberg %></a>
+        <a href="/books/openLibrary"><%= translations.openLibrary %></a>
+        <a href="/googlebooks"><%= translations.googleBooks %></a>
+        <a href="/admin"><%= translations.admin %></a>
+    </div>
 
-    <div>
+    <div class="language-switcher">
         <% if (language === "en") { %>
             🇬🇧 <strong>English</strong> | <a href="/set-language/ru">🇷🇺 Русский</a>
         <% } else { %>
@@ -36,9 +75,11 @@
         <% } %>
     </div>
 
-    <% if (user) { %>
-        <a href="/logout"><%= translations.nav.logout %></a>
-    <% } else { %>
-        <a href="/login"><%= translations.nav.login %></a>
-    <% } %>
+    <div>
+        <% if (user) { %>
+            <a href="/logout"><%= translations.nav.logout %></a>
+        <% } else { %>
+            <a href="/login"><%= translations.nav.login %></a>
+        <% } %>
+    </div>
 </nav>
