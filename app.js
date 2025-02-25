@@ -117,11 +117,24 @@ app.get("/", async (req, res) => {
     try {
         const items = await Item.find({ deletedAt: null });
         const adminSection = await AdminSection.findOne();
+        const translations = {
+            home: "Главная",
+            gutenberg: "Гутенберг",
+            openLibrary: "Открытая библиотека",
+            googleBooks: "Google Книги",
+            admin: "Админ",
+            nav: {
+                logout: "Выйти",
+                login: "Войти"
+            }
+        };
+
         res.render("index", {
             user: req.session.user,
             items,
             adminSection: adminSection || {},
-            language: "en" // Добавлено для исправления ошибки
+            language: "en",
+            translations // Добавлено для исправления ошибки
         });
     } catch (error) {
         console.error("❌ Error fetching data:", error);
@@ -129,30 +142,24 @@ app.get("/", async (req, res) => {
             user: req.session.user,
             items: [],
             adminSection: {},
-            language: "en" // Добавлено для исправления ошибки
+            language: "en",
+            translations: {} // Добавлено для исправления ошибки
         });
     }
 });
 
 app.use((req, res) => {
-    console.error(`❌ 404 Not Found: ${req.originalUrl}`);
-    res.status(404).json({ error: `404 Not Found: ${req.originalUrl}` });
+    console.error("404 Not Found:", req.originalUrl);
+    res.status(404).render("404", { user: req.session.user });
 });
 
-app.use((err, req, res, next) => {
-    console.error("❌ ERROR:", err.stack);
-    res.status(500).json({ error: "Internal Server Error", details: err.message });
+const PORT = process.env.PORT || 3000;
+
+importRoutes().then(() => {
+    app.listen(PORT, () => {
+        console.log(`🚀 Server running on port ${PORT}`);
+    });
+}).catch(err => {
+    console.error("❌ Error starting server:", err);
+    process.exit(1);
 });
-
-const startServer = async () => {
-    try {
-        await importRoutes();
-        const PORT = process.env.PORT || 3000;
-        app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
-    } catch (error) {
-        console.error("❌ Failed to start server:", error);
-        process.exit(1);
-    }
-};
-
-startServer();
