@@ -84,6 +84,7 @@ app.use(session({
     }
 }));
 
+// ✅ Middleware to load language settings
 app.use((req, res, next) => {
     if (!req.session.language) {
         req.session.language = "en";
@@ -93,16 +94,25 @@ app.use((req, res, next) => {
     next();
 });
 
+// ✅ Language Change Route (Fix: Ensures session is saved before redirecting)
 app.get("/set-language/:lang", (req, res) => {
     const { lang } = req.params;
     if (["en", "ru"].includes(lang)) {
         req.session.language = lang;
-        res.locals.translations = loadTranslations(lang);
-        return res.redirect(req.get("Referer") || "/");
+        req.session.save(err => {
+            if (err) {
+                console.error("❌ Error saving session:", err);
+                return res.status(500).json({ error: "Failed to save session" });
+            }
+            console.log("🌍 Language changed to:", req.session.language);
+            return res.redirect(req.get("Referer") || "/");
+        });
+    } else {
+        res.status(400).json({ error: "Invalid language selection" });
     }
-    res.status(400).json({ error: "Invalid language selection" });
 });
 
+// ✅ Ensure `user` is available in all EJS views
 app.use((req, res, next) => {
     res.locals.user = req.session.user || null;
     next();
