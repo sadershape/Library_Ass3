@@ -40,7 +40,7 @@
 
             const updateTimer = () => {
                 if (timeLeft <= 0) {
-                    window.location.href = "/user/profile"; // Redirect to user profile page when time runs out
+                    document.getElementById("quiz-form").submit();
                 } else {
                     timerElement.textContent = timeLeft + " seconds";
                     timeLeft--;
@@ -48,6 +48,28 @@
             };
 
             setInterval(updateTimer, 1000);
+        });
+
+        // Gracefully handle form submission
+        document.getElementById("quiz-form").addEventListener("submit", (event) => {
+            event.preventDefault();
+            fetch("/quiz/submit", {
+                method: "POST",
+                body: new FormData(event.target),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.text();
+            })
+            .then(() => {
+                window.location.href = "/user/profile"; // Redirect to user profile page on successful submission
+            })
+            .catch(error => {
+                console.error("Error submitting quiz:", error);
+                window.location.href = "/user/profile"; // Redirect to user profile page on error
+            });
         });
     </script>
 
