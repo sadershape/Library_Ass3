@@ -30,11 +30,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 question.options.forEach(option => {
                     const optionInput = document.createElement("input");
                     optionInput.type = "radio";
-                    optionInput.name = `question_${index}`;
+                    optionInput.name = `question_${question._id}`;
                     optionInput.value = option;
                     optionInput.required = true;
 
                     const optionLabel = document.createElement("label");
                     optionLabel.textContent = option;
 
-                    questionDiv.append
+                    questionDiv.appendChild(optionInput);
+                    questionDiv.appendChild(optionLabel);
+                });
+
+                quizQuestions.appendChild(questionDiv);
+            });
+        })
+        .catch(error => {
+            console.error("Error fetching quiz questions:", error);
+            const quizQuestions = document.getElementById("quiz-questions");
+            quizQuestions.innerHTML = "<p>Error loading quiz. Please try again later.</p>";
+        });
+});
