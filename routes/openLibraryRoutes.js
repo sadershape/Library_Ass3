@@ -1,6 +1,5 @@
 import express from "express";
 import axios from "axios";
-import { translateText } from "../config/translate.js"; // ✅ Correct import
 
 const router = express.Router();
 
@@ -21,14 +20,6 @@ router.get("/search", async (req, res) => {
             first_publish_year: book.first_publish_year,
             openLibraryUrl: `https://openlibrary.org${book.key}`
         }));
-
-        // Translate if the language is set to Russian
-        if (req.session.language === "ru") {
-            for (let i = 0; i < books.length; i++) {
-                books[i].title = await translateText(books[i].title, "ru");
-                books[i].author = await translateText(books[i].author, "ru");
-            }
-        }
 
         res.json(books);
     } catch (error) {
