@@ -1,6 +1,6 @@
-import express from "express";
-import bcrypt from "bcryptjs";
-import User from "../models/User.js"; // Import the User model
+const express = require("express");
+const bcrypt = require("bcryptjs");
+const User = require("../models/User"); // Remove `.js` if needed
 
 const router = express.Router();
 
