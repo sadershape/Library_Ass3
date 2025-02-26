@@ -17,10 +17,10 @@
                 <h2>Username: <%= user.username %></h2>
                 <h3>Quiz Results</h3>
                 <ul>
-                    <% if (user.quizResults.length > 0) { %>
+                    <% if (user.quizResults && user.quizResults.length > 0) { %>
                         <% user.quizResults.forEach(result => { %>
                             <li>
-                                Score: <%= result.score %> - Date: <%= result.date.toDateString() %>
+                                Score: <%= result.score %> - Date: <%= new Date(result.date).toLocaleDateString() %>
                             </li>
                         <% }) %>
                     <% } else { %>
@@ -28,7 +28,7 @@
                     <% } %>
                 </ul>
             <% } else { %>
-                <p>Unable to load user information. Please try again later.</p>
+                <p><%= error %></p>
             <% } %>
         </div>
     </main>
