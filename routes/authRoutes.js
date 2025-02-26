@@ -94,4 +94,5 @@ router.get("/logout", (req, res) => {
     });
 });
 
-export default router;
+module.exports = router;
+
