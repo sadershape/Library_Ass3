@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
 // Route to submit quiz answers
 router.post("/submit", async (req, res) => {
     try {
-        const { answers } = req.body;
+        const answers = req.body.answers;
         if (!answers) {
             throw new Error("No answers provided.");
         }
