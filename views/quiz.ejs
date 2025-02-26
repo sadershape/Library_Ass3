@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Quiz</title>
-    <link rel="stylesheet" href="/css/styles.css">
-    <script src="/js/quiz.js" defer></script>
+    <link rel="stylesheet" href="/css/styles.css"> <!-- Link to your CSS file -->
 </head>
 <body>
-    <%- include("navbar") %>
-    <div class="quiz-container">
+    <header>
+        <%- include("navbar") %> <!-- Include the navbar partial -->
+    </header>
+    <main>
         <h1>Quiz</h1>
         <div id="quiz-timer">Time left: <span id="timer"></span></div>
-        <form id="quiz-form" action="/quiz" method="post">
-            <!-- Quiz questions will be injected here dynamically -->
-            <div id="quiz-questions"></div>
+        <form id="quiz-form" method="POST" action="/quiz">
+            <div id="quiz-questions"></div> <!-- This is where questions will be injected -->
             <button type="submit">Submit Quiz</button>
         </form>
-    </div>
-    <%- include("footer") %>
+    </main>
+    <footer>
+        <%- include("footer") %> <!-- Include the footer partial -->
+    </footer>
+    <script src="/js/quiz.js"></script> <!-- Link to your quiz.js file -->
 </body>
 </html>
