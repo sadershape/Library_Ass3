@@ -4,82 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Home</title>
+    <!-- Подключаем Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/styles.css">  
+    
+    <!-- Подключаем ваши стили (они будут загружаться после Bootstrap) -->
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <%- include("navbar", { session: session }) %>
 
-    <div class="container text-center">
-        <section class="editable-section">
-            <h1><%= adminSection.title_en %></h1>
-            <p><%= adminSection.content_en %></p>
-            <img src="<%= adminSection.image %>" class="img-fluid" alt="Admin Image">
-        </section>
-
-        <hr>
-
-        <section class="search-info">
-            <h2>About Our Project</h2>
-            <p>Choose the right tool for your needs:</p>
-
-            <div class="row">
-                <% const searchOptions = [
-                    { path: '/books', title: 'Gutenberg Books', description: 'Access free eBooks from Project Gutenberg.' },
-                    { path: '/books/openlibrary', title: 'Open Library', description: 'Search Open Library’s database.' },
-                    { path: '/googlebooks', title: 'Google Books', description: 'Browse Google Books collection.' }
-                ]; %>
-
-                <% searchOptions.forEach(option => { %>
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h3 class="card-title"><%= option.title %></h3>
-                                <p class="card-text"><%= option.description %></p>
-                                <a href="<%= option.path %>" class="btn btn-primary">Explore</a>
-                            </div>
-                        </div>
-                    </div>
-                <% }); %>
-            </div>
-        </section>
-
-        <hr>
-
-        <h2>Library Collection</h2>
+    <!-- About Section -->
+    <section class="about-section">
         <div class="row">
-            <% items.forEach(item => { %>
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <div id="carousel<%= item._id %>" class="carousel slide" data-bs-ride="carousel">
-                            <div class="carousel-inner">
-                                <% item.images.forEach((img, index) => { %>
-                                    <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
-                                        <img src="<%= img %>" class="d-block w-100" alt="Item Image">
-                                    </div>
-                                <% }); %>
-                            </div>
-                            <button class="carousel-control-prev" type="button" data-bs-target="#carousel<%= item._id %>" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#carousel<%= item._id %>" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            </button>
-                        </div>
-
-                        <div class="card-body">
-                            <h5 class="card-title"><%= item.name_en %></h5>
-                            <p class="card-text"><%= item.description_en %></p>
-                        </div>
-                    </div>
-                </div>
-            <% }); %>
+            <!-- Фото слева -->
+            <div class="col-md-4">
+                <img src="your-image-path.jpg" class="img-fluid" alt="About Image">
+            </div>
+            <!-- Текст справа -->
+            <div class="col-md-8">
+                <h2>About Us</h2>
+                <p>This is some information about the project...</p>
+            </div>
         </div>
+    </section>
 
-        <hr>
+    <hr>
 
-        <button id="quizButton" class="btn btn-warning">Start Quiz</button>
-    </div>
+    <!-- Кнопка Quiz -->
+    <button id="quizButton" class="btn btn-warning">Start Quiz</button>
 
     <%- include("footer") %>
 
