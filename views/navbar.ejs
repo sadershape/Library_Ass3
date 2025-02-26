@@ -41,45 +41,22 @@
     nav a:hover::after {
         transform: scaleX(1);
     }
-
-    .language-switcher {
-        font-size: 18px;
-        color: white;
-    }
-
-    .language-switcher a {
-        text-decoration: none;
-        font-weight: bold;
-        color: white;
-    }
-
-    .language-switcher a:hover {
-        text-decoration: underline;
-    }
 </style>
 
 <nav>
     <div class="nav-links">
-        <a href="/"><%= translations.home %></a>
-        <a href="/books"><%= translations.gutenberg %></a>
-        <a href="/books/openLibrary"><%= translations.openLibrary %></a>
-        <a href="/googlebooks"><%= translations.googleBooks %></a>
-        <a href="/admin"><%= translations.admin || 'Admin' %></a>
-    </div>
-
-    <div class="language-switcher">
-        <% if (language === "en") { %>
-            🇬🇧 <strong>English</strong> | <a href="/set-language/ru">🇷🇺 Русский</a>
-        <% } else { %>
-            <a href="/set-language/en">🇬🇧 English</a> | 🇷🇺 <strong>Русский</strong>
-        <% } %>
+        <a href="/">Home</a>
+        <a href="/books">Gutenberg Books</a>
+        <a href="/books/openLibrary">Open Library</a>
+        <a href="/googlebooks">Google Books</a>
+        <a href="/admin">Admin</a>
     </div>
 
     <div>
         <% if (user) { %>
-            <a href="/logout"><%= translations.nav && translations.nav.logout ? translations.nav.logout : 'Logout' %></a>
+            <a href="/logout">Logout</a>
         <% } else { %>
-            <a href="/login"><%= translations.nav && translations.nav.login ? translations.nav.login : 'Login' %></a>
+            <a href="/login">Login</a>
         <% } %>
     </div>
 </nav>
