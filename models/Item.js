@@ -1,4 +1,5 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
+
 
 const ItemSchema = new mongoose.Schema({
     images: [String], // Array of 3 image URLs
