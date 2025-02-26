@@ -17,7 +17,7 @@
 body {
     font-family: 'Inter', sans-serif;
     background-color: #581515; /* Установлен фон на #581515 */
-    color: #ffffff;
+    color: #581515;
     margin: 0;
     padding: 0;
     display: flex;
@@ -126,5 +126,47 @@ body {
     .book-list {
         flex-direction: column;
         align-items: center;
+    }
+}
+ /* === About Section === */
+.about-section {
+    margin: 40px 0;
+    padding: 30px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.about-section .row {
+    display: flex;
+    align-items: center;
+}
+
+.about-section img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.about-section h2 {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.about-section p {
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+    .about-section .row {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .about-section img {
+        margin-bottom: 20px;
     }
 }
