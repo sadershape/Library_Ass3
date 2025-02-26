@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
 // Route to submit quiz answers
 router.post("/submit", async (req, res) => {
     try {
-        const answers = req.body.answers;
+        const { answers } = req.body;
         if (!answers) {
             throw new Error("No answers provided.");
         }
@@ -54,6 +54,9 @@ router.post("/submit", async (req, res) => {
 router.get("/result", async (req, res) => {
     try {
         const user = await User.findById(req.session.user._id).lean();
+        if (!user) {
+            throw new Error("User not found.");
+        }
         res.render("quizResult", { results: user.quizResults, user: req.session.user });
     } catch (error) {
         console.error("❌ Error fetching quiz results:", error);
