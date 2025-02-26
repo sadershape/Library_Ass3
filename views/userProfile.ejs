@@ -12,19 +12,23 @@
     <main>
         <h1>User Profile</h1>
         <div class="profile-container">
-            <h2>Username: <%= user.username %></h2>
-            <h3>Quiz Results</h3>
-            <ul>
-                <% if (user.quizResults.length > 0) { %>
-                    <% user.quizResults.forEach(result => { %>
-                        <li>
-                            Score: <%= result.score %> - Date: <%= result.date.toDateString() %>
-                        </li>
-                    <% }) %>
-                <% } else { %>
-                    <p>No quiz results available.</p>
-                <% } %>
-            </ul>
+            <% if (user) { %>
+                <h2>Username: <%= user.username %></h2>
+                <h3>Quiz Results</h3>
+                <ul>
+                    <% if (user.quizResults.length > 0) { %>
+                        <% user.quizResults.forEach(result => { %>
+                            <li>
+                                Score: <%= result.score %> - Date: <%= result.date.toDateString() %>
+                            </li>
+                        <% }) %>
+                    <% } else { %>
+                        <p>No quiz results available.</p>
+                    <% } %>
+                </ul>
+            <% } else { %>
+                <p><%= error %></p>
+            <% } %>
         </div>
     </main>
     <footer>
