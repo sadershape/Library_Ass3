@@ -31,4 +31,5 @@ router.get("/search", async (req, res) => {
 });
 
 console.log("📚 OpenLibrary routes initialized");
-export default router;
+module.exports = router;
+
