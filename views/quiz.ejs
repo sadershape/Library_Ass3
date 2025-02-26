@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="/js/quiz.js" defer></script>
+</head>
+<body>
+    <%- include("navbar") %>
+    <div class="quiz-container">
+        <h1>Quiz</h1>
+        <div id="quiz-timer">Time left: <span id="timer"></span></div>
+        <form id="quiz-form" action="/quiz" method="post">
+            <!-- Quiz questions will be injected here dynamically -->
+            <div id="quiz-questions"></div>
+            <button type="submit">Submit Quiz</button>
+        </form>
+    </div>
+    <%- include("footer") %>
+</body>
+</html>
