@@ -8,6 +8,7 @@ const connectDB = require("./config/db");
 const bcrypt = require("bcryptjs");
 const User = require("./models/User");
 const Item = require("./models/Item");
+const AdminSection = require("./models/AdminSection"); // Import AdminSection model
 
 const app = express();
 
@@ -98,15 +99,27 @@ app.get("/googlebooks", (req, res) => {
     res.render("googleBooks");
 });
 
-// ✅ Home Route - Fetch Items Before Rendering Index Page
+// ✅ Home Route - Fetch Items and Admin Section Before Rendering Index Page
 app.get("/", async (req, res) => {
     try {
         const items = await Item.find({ deletedAt: null });
+        const adminSection = await AdminSection.findOne(); // Fetch admin section
+
         console.log("📌 Items fetched:", items);
-        res.render("index", { user: req.session.user, items });
+        console.log("📌 Admin Section fetched:", adminSection);
+
+        res.render("index", { 
+            user: req.session.user, 
+            items, 
+            adminSection: adminSection || {} // Ensure it is always an object
+        });
     } catch (error) {
-        console.error("❌ Error fetching items:", error);
-        res.render("index", { user: req.session.user, items: [] });
+        console.error("❌ Error fetching items or admin section:", error);
+        res.render("index", { 
+            user: req.session.user, 
+            items: [], 
+            adminSection: {} 
+        });
     }
 });
 
