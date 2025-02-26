@@ -20,7 +20,7 @@ router.get("/", async (req, res) => {
     try {
         const users = await User.find({});
         const items = await Item.find({});
-        
+
         // Определение adminSection
         const adminSection = {
             title_en: 'Your Title',
