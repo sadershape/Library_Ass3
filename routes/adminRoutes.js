@@ -9,7 +9,7 @@ const router = express.Router();
 const flashMiddleware = (req, res, next) => {
     res.locals.success = req.session.flash?.success || null;
     res.locals.error = req.session.flash?.error || null;
-    req.session.flash = {}; // Clear flash messages after being used
+    delete req.session.flash; // Clear flash after setting locals
     next();
 };
 
@@ -22,7 +22,8 @@ router.get("/", async (req, res) => {
         const items = await Item.find({});
         res.render("admin", { users, items });
     } catch (err) {
-        req.session.flash = { error: "Error loading admin dashboard." };
+        req.session.flash = req.session.flash || {};
+        req.session.flash.error = "Error loading admin dashboard.";
         res.redirect("/");
     }
 });
@@ -32,13 +33,16 @@ router.post("/add", async (req, res) => {
     try {
         const { username, password, isAdmin } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
+        const role = isAdmin === "on" ? "admin" : "user";
 
-        const newUser = new User({ username, password: hashedPassword, isAdmin: isAdmin === "on" });
+        const newUser = new User({ username, password: hashedPassword, role });
         await newUser.save();
 
-        req.session.flash = { success: "User added successfully." };
+        req.session.flash = req.session.flash || {};
+        req.session.flash.success = "User added successfully.";
     } catch (err) {
-        req.session.flash = { error: "Failed to add user." };
+        req.session.flash = req.session.flash || {};
+        req.session.flash.error = "Failed to add user.";
     }
     res.redirect("/admin");
 });
@@ -47,9 +51,11 @@ router.post("/add", async (req, res) => {
 router.post("/delete/:id", async (req, res) => {
     try {
         await User.findByIdAndDelete(req.params.id);
-        req.session.flash = { success: "User deleted." };
+        req.session.flash = req.session.flash || {};
+        req.session.flash.success = "User deleted.";
     } catch (err) {
-        req.session.flash = { error: "Failed to delete user." };
+        req.session.flash = req.session.flash || {};
+        req.session.flash.error = "Failed to delete user.";
     }
     res.redirect("/admin");
 });
@@ -85,9 +91,11 @@ router.post("/items/add", async (req, res) => {
         });
 
         await newItem.save();
-        req.session.flash = { success: "Item added successfully." };
+        req.session.flash = req.session.flash || {};
+        req.session.flash.success = "Item added successfully.";
     } catch (err) {
-        req.session.flash = { error: "Failed to add item." };
+        req.session.flash = req.session.flash || {};
+        req.session.flash.error = "Failed to add item.";
     }
     res.redirect("/admin");
 });
@@ -98,9 +106,11 @@ router.post("/items/edit/:id", async (req, res) => {
         const { name_en, name_other, description_en, description_other } = req.body;
 
         await Item.findByIdAndUpdate(req.params.id, { name_en, name_other, description_en, description_other });
-        req.session.flash = { success: "Item updated." };
+        req.session.flash = req.session.flash || {};
+        req.session.flash.success = "Item updated.";
     } catch (err) {
-        req.session.flash = { error: "Failed to update item." };
+        req.session.flash = req.session.flash || {};
+        req.session.flash.error = "Failed to update item.";
     }
     res.redirect("/admin");
 });
@@ -109,9 +119,11 @@ router.post("/items/edit/:id", async (req, res) => {
 router.post("/items/delete/:id", async (req, res) => {
     try {
         await Item.findByIdAndDelete(req.params.id);
-        req.session.flash = { success: "Item deleted." };
+        req.session.flash = req.session.flash || {};
+        req.session.flash.success = "Item deleted.";
     } catch (err) {
-        req.session.flash = { error: "Failed to delete item." };
+        req.session.flash = req.session.flash || {};
+        req.session.flash.error = "Failed to delete item.";
     }
     res.redirect("/admin");
 });
