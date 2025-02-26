@@ -43,11 +43,26 @@ router.post("/submit", async (req, res) => {
             $push: { quizResults: quizResult }
         });
 
-        res.redirect("/user/profile"); // Redirect to the user profile page
+        // Redirect to results page with score and total questions
+        res.redirect(`/quiz/result?score=${score}&totalQuestions=${questions.length}`);
     } catch (error) {
         console.error("❌ Error submitting quiz:", error);
         res.status(500).render("error", { message: "Failed to submit quiz." });
     }
+});
+
+// Route to get quiz results
+router.get("/result", async (req, res) => {
+    const { score, totalQuestions } = req.query;
+    const message = score >= (totalQuestions / 2)
+        ? "Well done! You passed the quiz."
+        : "Better luck next time! Keep practicing.";
+
+    res.render("results", { 
+        score, 
+        totalQuestions, 
+        message 
+    });
 });
 
 module.exports = router;
