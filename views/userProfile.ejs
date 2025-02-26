@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="/css/styles.css"> <!-- Link to your CSS file -->
+</head>
+<body>
+    <header>
+        <%- include("navbar") %> <!-- Include the navbar partial -->
+    </header>
+    <main>
+        <h1>User Profile</h1>
+        <div class="profile-container">
+            <h2>Username: <%= user.username %></h2>
+            <h3>Quiz Results</h3>
+            <ul>
+                <% if (user.quizResults.length > 0) { %>
+                    <% user.quizResults.forEach(result => { %>
+                        <li>
+                            Score: <%= result.score %> - Date: <%= result.date.toDateString() %>
+                        </li>
+                    <% }) %>
+                <% } else { %>
+                    <p>No quiz results available.</p>
+                <% } %>
+            </ul>
+        </div>
+    </main>
+    <footer>
+        <%- include("footer") %> <!-- Include the footer partial -->
+    </footer>
+</body>
+</html>
