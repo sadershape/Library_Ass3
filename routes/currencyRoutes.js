@@ -3,14 +3,33 @@ const axios = require("axios");
 const router = express.Router();
 
 router.get("/", (req, res) => res.render("currency"));
+
 router.post("/", async (req, res) => {
-    const from = req.body.from;
-    const to = req.body.to;
-    const amount = req.body.amount;
-    const url = `https://v6.exchangeratesapi.io/latest?base=${from}&symbols=${to}&apikey=${process.env.EXCHANGE_RATES_API_KEY}`;
-    const response = await axios.get(url);
-    const rate = response.data.rates[to];
-    res.render("currency", { result: amount * rate });
+    try {
+        const { from, to, amount } = req.body;
+
+        // Validate input
+        if (!from || !to || !amount || isNaN(amount) || amount <= 0) {
+            return res.render("currency", { error: "Invalid input. Please enter valid currencies and amount." });
+        }
+
+        // Corrected API URL
+        const url = `https://api.exchangerate-api.com/v4/latest/${from}`;
+        const response = await axios.get(url);
+
+        // Check if target currency exists
+        const rate = response.data.rates[to];
+        if (!rate) {
+            return res.render("currency", { error: `Exchange rate for ${to} not found.` });
+        }
+
+        const result = (amount * rate).toFixed(2);
+
+        res.render("currency", { result, from, to, amount });
+    } catch (error) {
+        console.error("❌ Error fetching exchange rate:", error.message);
+        res.render("currency", { error: "Failed to retrieve exchange rate. Please try again." });
+    }
 });
 
 module.exports = router;
