@@ -1,5 +1,4 @@
-const Quiz = require("../models/Quiz");
-const User = require("../models/User");
+const Quiz = require("../models/Quiz"); // Adjust the path to your Quiz model
 
 // Fetch quiz questions
 exports.getQuizQuestions = async (req, res) => {
@@ -7,6 +6,7 @@ exports.getQuizQuestions = async (req, res) => {
         const questions = await Quiz.aggregate([{ $sample: { size: 5 } }]); // Randomize questions
         res.json(questions);
     } catch (error) {
+        console.error("Error fetching quiz questions:", error);
         res.status(500).json({ error: "Error fetching quiz questions" });
     }
 };
@@ -32,8 +32,8 @@ exports.submitQuizAnswers = async (req, res) => {
             );
         }
 
-        const message = score >= (questions.length / 2) 
-            ? "Well done! You passed the quiz." 
+        const message = score >= (questions.length / 2)
+            ? "Well done! You passed the quiz."
             : "Better luck next time! Keep practicing.";
 
         res.render("results", { 
