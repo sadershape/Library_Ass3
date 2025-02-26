@@ -1,42 +1,25 @@
-import dotenv from "dotenv";
-import express from "express";
-import mongoose from "mongoose";
-import session from "express-session";
-import MongoStore from "connect-mongo";
-import path from "path";
-import { fileURLToPath } from "url";
-import fs from "fs";
-import bcrypt from "bcryptjs";
-import connectDB from "./config/db.js";
-import User from "./models/User.js";
-import Item from "./models/Item.js";
-import AdminSection from "./models/AdminSection.js";
-import ejs from "ejs";
+require("dotenv").config();
+const express = require("express");
+const mongoose = require("mongoose");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const path = require("path");
+const connectDB = require("./config/db");
+const bcrypt = require("bcryptjs");
+const User = require("./models/User");
+const Item = require("./models/Item");
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-dotenv.config();
 const app = express();
 
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
-
-if (!process.env.MONGO_URI || !process.env.SESSION_SECRET) {
-    console.error("❌ Missing required environment variables! Please set MONGO_URI and SESSION_SECRET in .env file.");
-    process.exit(1);
-}
-
+// ✅ Connect to MongoDB
 connectDB()
     .then(() => {
         console.log("✅ MongoDB Connected");
-        createAdminUser();
+        createAdminUser(); // Ensure admin exists when DB connects
     })
-    .catch(err => {
-        console.error("❌ MongoDB Connection Error:", err);
-        process.exit(1);
-    });
+    .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
+// ✅ Function to Create a Hardcoded Admin User
 const createAdminUser = async () => {
     try {
         const existingAdmin = await User.findOne({ username: "admin" });
@@ -57,109 +40,84 @@ const createAdminUser = async () => {
     }
 };
 
+// ✅ Set up EJS as the view engine
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+
+// ✅ Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
+// ✅ Fix for "favicon.ico" 404 errors
+app.use("/favicon.ico", (req, res) => res.status(204));
+
+// ✅ Configure sessions with MongoDB storage
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || "default_secret",
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
         mongoUrl: process.env.MONGO_URI,
         collectionName: "sessions"
     }),
-    cookie: {
-        secure: process.env.NODE_ENV === "production",
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24
-    }
+    cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 24 }
 }));
 
+// ✅ Ensure `user` is available in all EJS views
 app.use((req, res, next) => {
     res.locals.user = req.session.user || null;
     next();
 });
 
-const importRoutes = async () => {
-    try {
-        console.log("📦 Importing routes...");
+// ✅ Custom Flash Message Middleware (Replacing express-flash)
+app.use((req, res, next) => {
+    res.locals.success = req.session.success || null;
+    res.locals.error = req.session.error || null;
+    delete req.session.success;
+    delete req.session.error;
+    next();
+});
 
-        const authRoutes = (await import("./routes/authRoutes.js")).default;
-        console.log("✅ authRoutes loaded");
+// ✅ Load Routes
+app.use("/", require("./routes/authRoutes"));
+app.use("/books", require("./routes/bookRoutes"));
+app.use("/api/openlibrary", require("./routes/openLibraryRoutes"));
+app.use("/weather", require("./routes/weatherRoutes"));
+app.use("/currency", require("./routes/currencyRoutes"));
+app.use("/admin", require("./routes/adminRoutes"));
+app.use("/history", require("./routes/historyRoutes"));
+app.use("/opengraph", require("./routes/opengraphRoutes"));
 
-        const bookRoutes = (await import("./routes/bookRoutes.js")).default;
-        console.log("✅ bookRoutes loaded");
+// ✅ Google Books Page
+app.get("/googlebooks", (req, res) => {
+    res.render("googleBooks");
+});
 
-        const openLibraryRoutes = (await import("./routes/openLibraryRoutes.js")).default;
-        console.log("✅ openLibraryRoutes loaded");
-
-        const adminRoutes = (await import("./routes/adminRoutes.js")).default;
-        console.log("✅ adminRoutes loaded");
-
-        const historyRoutes = (await import("./routes/historyRoutes.js")).default;
-        console.log("✅ historyRoutes loaded");
-
-        app.use("/", authRoutes);
-        app.use("/books", bookRoutes);
-        app.use("/books/openLibrary", openLibraryRoutes);
-        app.use("/admin", adminRoutes);
-        app.use("/history", historyRoutes);
-
-        console.log("🚀 All routes loaded successfully.");
-    } catch (error) {
-        console.error("❌ Error loading routes:", error);
-        process.exit(1);
-    }
-};
-
+// ✅ Home Route - Fetch Items Before Rendering Index Page
 app.get("/", async (req, res) => {
     try {
         const items = await Item.find({ deletedAt: null });
-        const adminSection = await AdminSection.findOne();
-        const translations = {
-            home: "Главная",
-            gutenberg: "Гутенберг",
-            openLibrary: "Открытая библиотека",
-            googleBooks: "Google Книги",
-            admin: "Админ",
-            nav: {
-                logout: "Выйти",
-                login: "Войти"
-            }
-        };
-
-        res.render("index", {
-            user: req.session.user,
-            items,
-            adminSection: adminSection || {},
-            language: "en",
-            translations // Добавлено для исправления ошибки
-        });
+        console.log("📌 Items fetched:", items);
+        res.render("index", { user: req.session.user, items });
     } catch (error) {
-        console.error("❌ Error fetching data:", error);
-        res.render("index", {
-            user: req.session.user,
-            items: [],
-            adminSection: {},
-            language: "en",
-            translations: {} // Добавлено для исправления ошибки
-        });
+        console.error("❌ Error fetching items:", error);
+        res.render("index", { user: req.session.user, items: [] });
     }
 });
 
+// ✅ 404 Error Handling for Unrecognized Routes
 app.use((req, res) => {
-    console.error("404 Not Found:", req.originalUrl);
-    res.status(404).render("404", { user: req.session.user });
+    console.error(`❌ 404 Not Found: ${req.originalUrl}`);
+    res.status(404).json({ error: `404 Not Found: ${req.originalUrl}` });
 });
 
+// ✅ Debugging: Show Full Errors Instead of Generic Message
+app.use((err, req, res, next) => {
+    console.error("❌ ERROR:", err.stack);
+    res.status(500).json({ error: "Internal Server Error", details: err.message });
+});
+
+// ✅ Start Server
 const PORT = process.env.PORT || 3000;
-
-importRoutes().then(() => {
-    app.listen(PORT, () => {
-        console.log(`🚀 Server running on port ${PORT}`);
-    });
-}).catch(err => {
-    console.error("❌ Error starting server:", err);
-    process.exit(1);
-});
+app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
