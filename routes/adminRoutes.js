@@ -1,131 +1,86 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const User = require("../models/User");
-const Item = require("../models/Item");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Home</title>
+    <!-- Подключаем Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Подключаем ваши стили (они будут загружаться после Bootstrap) -->
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <%- include("navbar", { session: session }) %>
 
-const router = express.Router();
+    <!-- About Section -->
+    <section class="about-section">
+        <div class="row">
+            <!-- Фото слева -->
+            <div class="col-md-4">
+                <img src="/path/to/Libraryphoto.webp" class="img-fluid" alt="About Image">
+            </div>
+            <!-- Текст справа -->
+            <div class="col-md-8">
+                <h2>About Us</h2>
+                <p>This is some information about the project...</p>
+            </div>
+        </div>
+    </section>
 
-// Middleware to handle flash messages
-const flashMiddleware = (req, res, next) => {
-    res.locals.success = req.session.flash?.success || null;
-    res.locals.error = req.session.flash?.error || null;
-    delete req.session.flash; // Clear flash after setting locals
-    next();
-};
+    <hr>
 
-router.use(flashMiddleware);
+    <!-- Items Section -->
+    <section class="items-section">
+        <div class="container">
+            <div class="row">
+                <% items.forEach(item => { %>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div id="carousel<%= item._id %>" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active">
+                                        <img src="<%= item.images[0] %>" class="d-block w-100" alt="Item Image 1">
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img src="<%= item.images[1] %>" class="d-block w-100" alt="Item Image 2">
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img src="<%= item.images[2] %>" class="d-block w-100" alt="Item Image 3">
+                                    </div>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel<%= item._id %>" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carousel<%= item._id %>" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title"><%= item.name_en %> / <%= item.name_other %></h5>
+                                <p class="card-text"><%= item.description_en %></p>
+                                <p class="card-text"><%= item.description_other %></p>
+                                <p class="card-text"><small class="text-muted">Created: <%= new Date(item.createdAt).toLocaleDateString() %></small></p>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </section>
 
-// 🔹 Admin Dashboard
-router.get("/", async (req, res) => {
-    try {
-        const users = await User.find({});
-        const items = await Item.find({});
-        res.render("admin", { users, items });
-    } catch (err) {
-        req.session.flash = req.session.flash || {};
-        req.session.flash.error = "Error loading admin dashboard.";
-        res.redirect("/");
-    }
-});
+    <!-- Кнопка Quiz -->
+    <button id="quizButton" class="btn btn-warning">Start Quiz</button>
 
-// 🔹 ADD NEW USER
-router.post("/add", async (req, res) => {
-    try {
-        const { username, password, isAdmin } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const role = isAdmin === "on" ? "admin" : "user";
+    <%- include("footer") %>
 
-        const newUser = new User({ username, password: hashedPassword, role });
-        await newUser.save();
-
-        req.session.flash = req.session.flash || {};
-        req.session.flash.success = "User added successfully.";
-    } catch (err) {
-        req.session.flash = req.session.flash || {};
-        req.session.flash.error = "Failed to add user.";
-    }
-    res.redirect("/admin");
-});
-
-// 🔹 DELETE USER
-router.post("/delete/:id", async (req, res) => {
-    try {
-        await User.findByIdAndDelete(req.params.id);
-        req.session.flash = req.session.flash || {};
-        req.session.flash.success = "User deleted.";
-    } catch (err) {
-        req.session.flash = req.session.flash || {};
-        req.session.flash.error = "Failed to delete user.";
-    }
-    res.redirect("/admin");
-});
-
-// 🔹 UPDATE USER PASSWORD
-router.post("/users/update-password/:id", async (req, res) => {
-    try {
-        const { newPassword } = req.body;
-        if (!newPassword || newPassword.length < 6) {
-            return res.status(400).json({ error: "Password must be at least 6 characters long!" });
-        }
-
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        await User.findByIdAndUpdate(req.params.id, { password: hashedPassword });
-
-        res.status(200).json({ success: "Password updated successfully!" });
-    } catch (err) {
-        res.status(500).json({ error: "Failed to update password." });
-    }
-});
-
-// 🔹 ADD NEW ITEM
-router.post("/items/add", async (req, res) => {
-    try {
-        const { name_en, name_other, description_en, description_other, image1, image2, image3 } = req.body;
-
-        const newItem = new Item({
-            name_en,
-            name_other,
-            description_en,
-            description_other,
-            images: [image1, image2, image3]
+    <script>
+        document.getElementById('quizButton').addEventListener('click', function () {
+            window.location.href = "/quiz"; // Redirect to the quiz page
         });
+    </script>
 
-        await newItem.save();
-        req.session.flash = req.session.flash || {};
-        req.session.flash.success = "Item added successfully.";
-    } catch (err) {
-        req.session.flash = req.session.flash || {};
-        req.session.flash.error = "Failed to add item.";
-    }
-    res.redirect("/admin");
-});
-
-// 🔹 EDIT ITEM
-router.post("/items/edit/:id", async (req, res) => {
-    try {
-        const { name_en, name_other, description_en, description_other } = req.body;
-
-        await Item.findByIdAndUpdate(req.params.id, { name_en, name_other, description_en, description_other });
-        req.session.flash = req.session.flash || {};
-        req.session.flash.success = "Item updated.";
-    } catch (err) {
-        req.session.flash = req.session.flash || {};
-        req.session.flash.error = "Failed to update item.";
-    }
-    res.redirect("/admin");
-});
-
-// 🔹 DELETE ITEM
-router.post("/items/delete/:id", async (req, res) => {
-    try {
-        await Item.findByIdAndDelete(req.params.id);
-        req.session.flash = req.session.flash || {};
-        req.session.flash.success = "Item deleted.";
-    } catch (err) {
-        req.session.flash = req.session.flash || {};
-        req.session.flash.error = "Failed to delete item.";
-    }
-    res.redirect("/admin");
-});
-
-module.exports = router;
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
