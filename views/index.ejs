@@ -18,7 +18,7 @@
         <div class="row">
             <!-- Фото слева -->
             <div class="col-md-4">
-                <img src=""C:\Users\Admin\Downloads\Libraryphoto.webp"" class="img-fluid" alt="About Image">
+                <img src="/path/to/Libraryphoto.webp" class="img-fluid" alt="About Image">
             </div>
             <!-- Текст справа -->
             <div class="col-md-8">
@@ -29,6 +29,47 @@
     </section>
 
     <hr>
+
+    <!-- Items Section -->
+    <section class="items-section">
+        <div class="container">
+            <div class="row">
+                <% items.forEach(item => { %>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div id="carousel<%= item._id %>" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active">
+                                        <img src="<%= item.picture1 %>" class="d-block w-100" alt="Item Image 1">
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img src="<%= item.picture2 %>" class="d-block w-100" alt="Item Image 2">
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img src="<%= item.picture3 %>" class="d-block w-100" alt="Item Image 3">
+                                    </div>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel<%= item._id %>" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carousel<%= item._id %>" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title"><%= item.name1 %> / <%= item.name2 %></h5>
+                                <p class="card-text"><%= item.description1 %></p>
+                                <p class="card-text"><%= item.description2 %></p>
+                                <p class="card-text"><small class="text-muted">Created: <%= new Date(item.createdAt).toLocaleDateString() %></small></p>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </section>
 
     <!-- Кнопка Quiz -->
     <button id="quizButton" class="btn btn-warning">Start Quiz</button>
