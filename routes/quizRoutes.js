@@ -1,17 +1,27 @@
 const express = require("express");
 const router = express.Router();
-const quizController = require("../controllers/quizController");
 const Quiz = require("../models/Quiz");
 const QuizResult = require("../models/QuizResult");
 const User = require("../models/User");
 
 // Route to get quiz questions
-router.get("/", quizController.getQuizQuestions);
+router.get("/", async (req, res) => {
+    try {
+        const questions = await Quiz.aggregate([{ $sample: { size: 5 } }]);
+        res.render("quiz", { questions, user: req.session.user });
+    } catch (error) {
+        console.error("Error fetching quiz questions:", error);
+        res.status(500).render("error", { message: "Failed to load quiz questions." });
+    }
+});
 
 // Route to submit quiz answers
 router.post("/submit", async (req, res) => {
     try {
         const { answers } = req.body;
+        if (!answers) {
+            throw new Error("No answers provided.");
+        }
 
         // Fetch correct answers from the database
         const questionIds = Object.keys(answers);
