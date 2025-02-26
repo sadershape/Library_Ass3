@@ -1,22 +1,15 @@
 const express = require("express");
-const QuizResult = require("../models/QuizResult");
 const router = express.Router();
+const Quiz = require("../models/Quiz"); // Ensure the path is correct for your project
+const QuizResult = require("../models/QuizResult"); // Ensure the path is correct for your project
 
 // ✅ Get Randomized Quiz Questions
 router.get("/", async (req, res) => {
     try {
-        const questions = [
-            { question: "What is the capital of France?", options: ["Paris", "London", "Berlin", "Rome"], answer: "Paris" },
-            { question: "Which planet is known as the Red Planet?", options: ["Earth", "Mars", "Jupiter", "Venus"], answer: "Mars" },
-            { question: "What is 5 + 3?", options: ["5", "8", "12", "15"], answer: "8" },
-            { question: "Who wrote 'To Kill a Mockingbird'?", options: ["Harper Lee", "J.K. Rowling", "George Orwell", "Mark Twain"], answer: "Harper Lee" },
-            { question: "What is the largest ocean on Earth?", options: ["Atlantic", "Indian", "Arctic", "Pacific"], answer: "Pacific" }
-        ];
+        // Fetch quiz questions from the database and shuffle them
+        const questions = await Quiz.aggregate([{ $sample: { size: 5 } }]); // Adjust the sample size as needed
 
-        // Shuffle questions for randomness
-        const shuffledQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 3);
-
-        res.render("quiz", { questions: shuffledQuestions, user: req.session.user });
+        res.render("quiz", { questions, user: req.session.user });
     } catch (error) {
         console.error("❌ Error fetching quiz questions:", error);
         res.status(500).render("error", { message: "Failed to load quiz questions." });
@@ -33,13 +26,14 @@ router.post("/submit", async (req, res) => {
         }
 
         let score = 0;
-        const correctAnswers = {
-            "What is the capital of France?": "Paris",
-            "Which planet is known as the Red Planet?": "Mars",
-            "What is 5 + 3?": "8",
-            "Who wrote 'To Kill a Mockingbird'?": "Harper Lee",
-            "What is the largest ocean on Earth?": "Pacific"
-        };
+        // Fetch all questions and answers from the database
+        const questions = await Quiz.find({});
+        const correctAnswers = {};
+
+        // Create a map of question to correct answer
+        questions.forEach(question => {
+            correctAnswers[question.question] = question.answer;
+        });
 
         for (let [question, answer] of Object.entries(answers)) {
             if (correctAnswers[question] === answer) {
