@@ -1,4 +1,5 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
+
 
 const AdminSectionSchema = new mongoose.Schema({
     title_en: { type: String, required: true },
