@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const quizController = require("../controllers/quizController");
+const Quiz = require("../models/Quiz");
 const QuizResult = require("../models/QuizResult");
 const User = require("../models/User");
 
@@ -11,11 +12,11 @@ router.get("/", quizController.getQuizQuestions);
 router.post("/submit", async (req, res) => {
     try {
         const { answers } = req.body;
-        
+
         // Fetch correct answers from the database
         const questionIds = Object.keys(answers);
         const questions = await Quiz.find({ _id: { $in: questionIds } });
-        
+
         let score = 0;
         questions.forEach((question) => {
             if (answers[question._id] === question.correctAnswer) {
