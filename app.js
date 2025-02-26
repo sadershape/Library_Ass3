@@ -93,6 +93,8 @@ app.use("/books", require("./routes/bookRoutes"));
 app.use("/api/openlibrary", require("./routes/openLibraryRoutes"));
 app.use("/admin", require("./routes/adminRoutes"));
 app.use("/history", require("./routes/historyRoutes"));
+app.use("/quiz", require("./routes/quizRoutes")); // Load quiz routes
+app.use("/user", require("./routes/userRoutes")); // Load user routes
 
 // ✅ Google Books Page
 app.get("/googlebooks", (req, res) => {
