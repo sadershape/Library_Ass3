@@ -1,4 +1,5 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
+
 
 const HistorySchema = new mongoose.Schema({
     userId: mongoose.Schema.Types.ObjectId,
