@@ -90,11 +90,8 @@ app.use((req, res, next) => {
 app.use("/", require("./routes/authRoutes"));
 app.use("/books", require("./routes/bookRoutes"));
 app.use("/api/openlibrary", require("./routes/openLibraryRoutes"));
-app.use("/weather", require("./routes/weatherRoutes"));
-app.use("/currency", require("./routes/currencyRoutes"));
 app.use("/admin", require("./routes/adminRoutes"));
 app.use("/history", require("./routes/historyRoutes"));
-app.use("/opengraph", require("./routes/opengraphRoutes"));
 
 // ✅ Google Books Page
 app.get("/googlebooks", (req, res) => {
