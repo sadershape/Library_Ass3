@@ -72,9 +72,9 @@ app.use(session({
     cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 24 }
 }));
 
-// ✅ Ensure `user` is available in all EJS views
+// ✅ Middleware to pass session data to all views
 app.use((req, res, next) => {
-    res.locals.user = req.session.user || null;
+    res.locals.session = req.session;
     next();
 });
 
