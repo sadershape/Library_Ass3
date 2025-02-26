@@ -16,7 +16,7 @@
 /* === Global Styles === */
 body {
     font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #232526, #414345);
+    background-color: #581515; /* Изменен фон на #581515 */
     color: #ffffff;
     margin: 0;
     padding: 0;
@@ -47,8 +47,7 @@ body {
     width: 100%;
     max-width: 1200px;
     padding: 15px 30px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px);
+    background-color: #000000; /* Черный фон для navbar */
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
 }
