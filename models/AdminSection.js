@@ -9,4 +9,4 @@ const AdminSectionSchema = new mongoose.Schema({
     image: { type: String, required: true }
 });
 
-export default mongoose.model("AdminSection", AdminSectionSchema);
+module.exports = mongoose.model("AdminSection", AdminSectionSchema);
