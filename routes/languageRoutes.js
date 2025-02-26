@@ -27,4 +27,5 @@ router.get("/set-language/:lang", (req, res) => {
     }
 });
 
-export default router;
+module.exports = router;
+
