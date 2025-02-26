@@ -79,24 +79,13 @@
         <hr>
 
         <button id="quizButton" class="btn btn-warning">Start Quiz</button>
-        <p id="countdown" style="font-size: 1.5rem; font-weight: bold;"></p>
     </div>
 
     <%- include("footer") %>
 
     <script>
         document.getElementById('quizButton').addEventListener('click', function () {
-            let timeLeft = 10;
-            const countdown = document.getElementById('countdown');
-            countdown.textContent = timeLeft;
-            const timer = setInterval(() => {
-                timeLeft--;
-                countdown.textContent = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    alert('Time is up! Submitting the quiz.');
-                }
-            }, 1000);
+            window.location.href = "/quiz"; // Redirect to the quiz page
         });
     </script>
 
