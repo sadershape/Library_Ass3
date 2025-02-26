@@ -34,18 +34,14 @@ router.post("/submit", async (req, res) => {
             }
         });
 
-        const quizResult = new QuizResult({
-            user: req.session.user._id,
+        const quizResult = {
             score,
-            totalQuestions: questions.length,
-            completedInTime: true
-        });
-
-        await quizResult.save();
+            date: new Date()
+        };
 
         // Save the result to the user's profile
         await User.findByIdAndUpdate(req.session.user._id, {
-            $push: { quizResults: quizResult._id }
+            $push: { quizResults: quizResult }
         });
 
         res.redirect("/quiz/result");
@@ -58,8 +54,8 @@ router.post("/submit", async (req, res) => {
 // Route to get quiz results
 router.get("/result", async (req, res) => {
     try {
-        const results = await QuizResult.find({ user: req.session.user._id }).sort({ date: -1 }).limit(5);
-        res.render("quizResult", { results, user: req.session.user });
+        const user = await User.findById(req.session.user._id).lean();
+        res.render("quizResult", { results: user.quizResults, user: req.session.user });
     } catch (error) {
         console.error("❌ Error fetching quiz results:", error);
         res.status(500).render("error", { message: "Failed to load quiz results." });
