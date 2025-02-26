@@ -20,7 +20,15 @@ router.get("/", async (req, res) => {
     try {
         const users = await User.find({});
         const items = await Item.find({});
-        res.render("admin", { users, items });
+        
+        // Определение adminSection
+        const adminSection = {
+            title_en: 'Your Title',
+            content_en: 'Your Content',
+            image: 'path/to/image.jpg'
+        };
+
+        res.render("admin", { users, items, adminSection });
     } catch (err) {
         req.session.flash = req.session.flash || {};
         req.session.flash.error = "Error loading admin dashboard.";
