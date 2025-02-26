@@ -1,4 +1,5 @@
-const Quiz = require("../models/Quiz"); // Adjust the path to your Quiz model
+const Quiz = require("../models/Quiz");
+const User = require("../models/User"); // Ensure the path to your User model is correct
 
 // Fetch quiz questions
 exports.getQuizQuestions = async (req, res) => {
@@ -13,22 +14,32 @@ exports.getQuizQuestions = async (req, res) => {
 
 // Validate answers and save results
 exports.submitQuizAnswers = async (req, res) => {
-    const { answers } = req.body;
     try {
-        const questions = await Quiz.find({ _id: { $in: Object.keys(answers) } });
-        let score = 0;
+        const { answers } = req.body;
+        if (!answers) {
+            throw new Error("No answers provided.");
+        }
 
+        const questionIds = Object.keys(answers);
+        const questions = await Quiz.find({ _id: { $in: questionIds } });
+
+        let score = 0;
         questions.forEach((question) => {
-            if (answers[question._id] === question.answer) {
+            if (answers[question._id] === question.correctAnswer) {
                 score++;
             }
         });
+
+        const quizResult = {
+            score,
+            date: new Date()
+        };
 
         // Save quiz result to user's profile
         if (req.session.user) {
             await User.updateOne(
                 { _id: req.session.user._id },
-                { $push: { quizResults: { score } } }
+                { $push: { quizResults: quizResult } }
             );
         }
 
@@ -43,9 +54,7 @@ exports.submitQuizAnswers = async (req, res) => {
         });
     } catch (error) {
         console.error("Error submitting quiz answers:", error);
-        res.render("results", { 
-            score: null, 
-            totalQuestions: 0, 
+        res.status(500).render("error", { 
             message: "An error occurred while processing your quiz results."
         });
     }
