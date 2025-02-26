@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Results</title>
+    <link rel="stylesheet" href="/css/styles.css"> <!-- Link to your CSS file -->
+</head>
+<body>
+    <header>
+        <%- include("navbar") %> <!-- Include the navbar partial -->
+    </header>
+    <main>
+        <h1>Quiz Results</h1>
+        <div class="results-container">
+            <% if (score !== undefined && score !== null) { %>
+                <p>Your Score: <%= score %> out of <%= totalQuestions %></p>
+                <p><%= message %></p>
+            <% } else { %>
+                <p>No quiz results to display.</p>
+            <% } %>
+        </div>
+        <a href="/quiz">Take Another Quiz</a>
+    </main>
+    <footer>
+        <%- include("footer") %> <!-- Include the footer partial -->
+    </footer>
+</body>
+</html>
