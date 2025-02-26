@@ -112,34 +112,49 @@ h1, h2, p {
     }
 }
 
- /* === About Section === */
-.about-section {
-    margin: 40px 0;
-    padding: 30px;
-    background-color: #f8f9fa;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
+<style>
+    .about-section {
+        background-color: #800000; /* Темно-красный фон */
+        padding: 50px 0; /* Отступы сверху и снизу */
+    }
 
-.about-section .row {
-    display: flex;
-    align-items: center;
-}
+    .content-container {
+        background-color: white;
+        width: 80%; /* Ширина контейнера (можно настроить) */
+        margin: 0 auto; /* Центрирование контейнера */
+        padding: 20px;
+        display: flex; /* Используем flexbox для расположения элементов */
+    }
 
-.about-section img {
-    max-width: 100%;
-    border-radius: 8px;
-    margin-bottom: 20px;
-}
+    .image-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* 2 колонки */
+        grid-gap: 10px; /* Расстояние между фото */
+        width: 50%; /* Ширина блока с фото */
+    }
 
-.about-section h2 {
-    font-size: 32px;
-    font-weight: 600;
-    margin-bottom: 20px;
-}
+    .image-grid img {
+        width: 100%;
+        height: auto;
+    }
 
-.about-section p {
-    font-size: 18px;
-    line-height: 1.6;
-}
+    .text-content {
+        width: 50%; /* Ширина блока с текстом */
+        padding-left: 20px; /* Отступ слева от текста */
+    }
+</style>
 
+<section class="about-section">
+    <div class="content-container">
+        <div class="image-grid">
+            <img src="your-image1.jpg" alt="Image 1">
+            <img src="your-image2.jpg" alt="Image 2">
+            <img src="your-image3.jpg" alt="Image 3">
+            <img src="your-image4.jpg" alt="Image 4">
+        </div>
+        <div class="text-content">
+            <h2>About Project</h2>
+            <p>This year's Architecture Expo will be held at the fabulous Hong Kong City Hall. The Expo is constantly developing, demonstrating effective cooperation between the development market and the architects. This year's record-breaking edition of the Expo will feature 230 exhibitors and 25 speakers from over 30 countries.</p>
+        </div>
+    </div>
+</section>
