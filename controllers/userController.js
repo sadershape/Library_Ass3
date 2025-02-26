@@ -1,5 +1,4 @@
 const User = require("../models/User");
-const QuizResult = require("../models/QuizResult");
 
 exports.getUserProfile = async (req, res) => {
     try {
@@ -7,7 +6,7 @@ exports.getUserProfile = async (req, res) => {
             return res.status(401).redirect("/login");
         }
 
-        const user = await User.findById(req.session.user._id).populate('quizResults').lean();
+        const user = await User.findById(req.session.user._id).lean();
         if (!user) {
             return res.status(404).render("userProfile", { user: null, error: "User not found.", session: req.session });
         }
