@@ -6,24 +6,47 @@
     <title>Library Home</title>
     <!-- Подключаем Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    
     <!-- Подключаем ваши стили (они будут загружаться после Bootstrap) -->
     <link rel="stylesheet" href="/styles.css">
+    <style>
+        /* Additional custom styles to enhance appearance */
+        .about-section {
+            padding: 40px 0;
+        }
+        .items-section {
+            padding: 40px 0;
+        }
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        .carousel-inner img {
+            border-radius: 10px 10px 0 0;
+        }
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: #000;
+            border-radius: 50%;
+        }
+    </style>
 </head>
 <body>
     <%- include("navbar", { session: session }) %>
 
     <!-- About Section -->
-    <section class="about-section">
-        <div class="row">
-            <!-- Фото слева -->
-            <div class="col-md-4">
-                <img src="/path/to/Libraryphoto.webp" class="img-fluid" alt="About Image">
-            </div>
-            <!-- Текст справа -->
-            <div class="col-md-8">
-                <h2>About Us</h2>
-                <p>This is some information about the project...</p>
+    <section class="about-section text-center">
+        <div class="container">
+            <div class="row">
+                <!-- Фото слева -->
+                <div class="col-md-4">
+                    <img src="/path/to/Libraryphoto.webp" class="img-fluid rounded" alt="About Image">
+                </div>
+                <!-- Текст справа -->
+                <div class="col-md-8">
+                    <h2>About Us</h2>
+                    <p>This is some information about the project...</p>
+                </div>
             </div>
         </div>
     </section>
@@ -31,22 +54,22 @@
     <hr>
 
     <!-- Items Section -->
-    <section class="items-section">
+    <section class="items-section text-center">
         <div class="container">
             <div class="row">
                 <% items.forEach(item => { %>
-                    <div class="col-md-4 mb-4">
+                    <div class="col-lg-6 mb-4">
                         <div class="card">
                             <div id="carousel<%= item._id %>" class="carousel slide" data-bs-ride="carousel">
                                 <div class="carousel-inner">
                                     <div class="carousel-item active">
-                                        <img src="<%= item.picture1 %>" class="d-block w-100" alt="Item Image 1">
+                                        <img src="<%= item.images[0] %>" class="d-block w-100" alt="Item Image 1">
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="<%= item.picture2 %>" class="d-block w-100" alt="Item Image 2">
+                                        <img src="<%= item.images[1] %>" class="d-block w-100" alt="Item Image 2">
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="<%= item.picture3 %>" class="d-block w-100" alt="Item Image 3">
+                                        <img src="<%= item.images[2] %>" class="d-block w-100" alt="Item Image 3">
                                     </div>
                                 </div>
                                 <button class="carousel-control-prev" type="button" data-bs-target="#carousel<%= item._id %>" data-bs-slide="prev">
@@ -59,9 +82,9 @@
                                 </button>
                             </div>
                             <div class="card-body">
-                                <h5 class="card-title"><%= item.name1 %> / <%= item.name2 %></h5>
-                                <p class="card-text"><%= item.description1 %></p>
-                                <p class="card-text"><%= item.description2 %></p>
+                                <h5 class="card-title"><%= item.name_en %> / <%= item.name_other %></h5>
+                                <p class="card-text"><%= item.description_en %></p>
+                                <p class="card-text"><%= item.description_other %></p>
                                 <p class="card-text"><small class="text-muted">Created: <%= new Date(item.createdAt).toLocaleDateString() %></small></p>
                             </div>
                         </div>
@@ -72,7 +95,9 @@
     </section>
 
     <!-- Кнопка Quiz -->
-    <button id="quizButton" class="btn btn-warning">Start Quiz</button>
+    <div class="text-center mb-4">
+        <button id="quizButton" class="btn btn-warning">Start Quiz</button>
+    </div>
 
     <%- include("footer") %>
 
