@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const Quiz = require("../models/Quiz");
-const QuizResult = require("../models/QuizResult");
 const User = require("../models/User");
 
 // Route to get quiz questions
@@ -18,7 +17,7 @@ router.get("/", async (req, res) => {
 // Route to submit quiz answers
 router.post("/submit", async (req, res) => {
     try {
-        const answers = req.body.answers;
+        const { answers } = req.body;
         if (!answers) {
             throw new Error("No answers provided.");
         }
