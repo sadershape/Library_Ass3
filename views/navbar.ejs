@@ -50,13 +50,13 @@
         <a href="/books/openLibrary">Open Library</a>
         <a href="/googlebooks">Google Books</a>
         <a href="/admin">Admin</a>
-        <% if (user) { %>
+        <% if (session.user) { %>
             <a href="/user/profile">Profile</a>
         <% } %>
     </div>
 
     <div>
-        <% if (user) { %>
+        <% if (session.user) { %>
             <a href="/logout">Logout</a>
         <% } else { %>
             <a href="/login">Login</a>
