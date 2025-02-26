@@ -11,121 +11,121 @@
         <div class="alert alert-danger"><%= error %></div>
     <% } %>
 
-    <!-- Add User Section -->
-    <section>
-        <h3>Add New User</h3>
-        <form action="/admin/add" method="POST" class="form">
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="isAdmin">Admin</label>
-                <input type="checkbox" id="isAdmin" name="isAdmin">
-            </div>
-            <button type="submit" class="btn btn-primary">Add User</button>
-        </form>
-    </section>
+    <!-- Add User Form -->
+    <h3>Add New User</h3>
+    <form action="/admin/add" method="POST" class="form">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="isAdmin">Admin</label>
+            <input type="checkbox" id="isAdmin" name="isAdmin">
+        </div>
+        <button type="submit" class="btn btn-primary">Add User</button>
+    </form>
 
-    <!-- User List Section -->
-    <section>
-        <h3>User List</h3>
-        <table class="table">
-            <thead>
+    <!-- User List -->
+    <h3>User List</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% users.forEach(user => { %>
                 <tr>
-                    <th>Username</th>
-                    <th>Role</th>
-                    <th>Actions</th>
+                    <td><%= user.username %></td>
+                    <td><%= user.isAdmin ? "Admin" : "User" %></td>
+                    <td>
+                        <!-- Delete User -->
+                        <form action="/admin/delete/<%= user._id %>" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+
+                        <!-- Update Password Button -->
+                        <button class="btn btn-warning update-password-btn" data-userid="<%= user._id %>">
+                            🔑 Update Password
+                        </button>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                <% users.forEach(user => { %>
-                    <tr>
-                        <td><%= user.username %></td>
-                        <td><%= user.isAdmin ? "Admin" : "User" %></td>
-                        <td>
-                            <form action="/admin/delete/<%= user._id %>" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-danger">Delete</button>
-                            </form>
-                            <button class="btn btn-warning update-password-btn" data-userid="<%= user._id %>">🔑 Update Password</button>
-                        </td>
-                    </tr>
-                <% }) %>
-            </tbody>
-        </table>
-    </section>
+            <% }) %>
+        </tbody>
+    </table>
 
     <hr>
 
-    <!-- Add Item Section -->
-    <section>
-        <h3>Add New Item</h3>
-        <form action="/admin/items/add" method="POST" class="form">
-            <div class="form-group">
-                <label for="name_en">Item Name (English)</label>
-                <input type="text" id="name_en" name="name_en" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="name_other">Item Name (Other Language)</label>
-                <input type="text" id="name_other" name="name_other" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="description_en">Description (English)</label>
-                <textarea id="description_en" name="description_en" class="form-control" required></textarea>
-            </div>
-            <div class="form-group">
-                <label for="description_other">Description (Other Language)</label>
-                <textarea id="description_other" name="description_other" class="form-control" required></textarea>
-            </div>
-            <div class="form-group">
-                <label>Images (Enter 3 Image URLs)</label>
-                <input type="text" name="image1" class="form-control" placeholder="Image 1 URL" required>
-                <input type="text" name="image2" class="form-control" placeholder="Image 2 URL" required>
-                <input type="text" name="image3" class="form-control" placeholder="Image 3 URL" required>
-            </div>
-            <button type="submit" class="btn btn-success">Add Item</button>
-        </form>
-    </section>
+    <!-- Add Item Form -->
+    <h3>Add New Item</h3>
+    <form action="/admin/items/add" method="POST" class="form">
+        <div class="form-group">
+            <label for="name_en">Item Name (English)</label>
+            <input type="text" id="name_en" name="name_en" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="name_other">Item Name (Other Language)</label>
+            <input type="text" id="name_other" name="name_other" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="description_en">Description (English)</label>
+            <textarea id="description_en" name="description_en" class="form-control" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="description_other">Description (Other Language)</label>
+            <textarea id="description_other" name="description_other" class="form-control" required></textarea>
+        </div>
+        <div class="form-group">
+            <label>Images (Enter 3 Image URLs)</label>
+            <input type="text" name="image1" class="form-control" placeholder="Image 1 URL" required>
+            <input type="text" name="image2" class="form-control" placeholder="Image 2 URL" required>
+            <input type="text" name="image3" class="form-control" placeholder="Image 3 URL" required>
+        </div>
+        <button type="submit" class="btn btn-success">Add Item</button>
+    </form>
 
-    <!-- Item List Section -->
-    <section>
-        <h3>Manage Items</h3>
-        <table class="table">
-            <thead>
+    <!-- Item List -->
+    <h3>Manage Items</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Images</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% items.forEach(item => { %>
                 <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Images</th>
-                    <th>Actions</th>
+                    <td><%= item.name_en %> / <%= item.name_other %></td>
+                    <td><%= item.description_en %></td>
+                    <td>
+                        <img src="<%= item.images[0] %>" width="50">
+                        <img src="<%= item.images[1] %>" width="50">
+                        <img src="<%= item.images[2] %>" width="50">
+                    </td>
+                    <td>
+                        <!-- Edit Form -->
+                        <form action="/admin/items/edit/<%= item._id %>" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-warning">Edit</button>
+                        </form>
+                        <!-- Delete Form -->
+                        <form action="/admin/items/delete/<%= item._id %>" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                <% items.forEach(item => { %>
-                    <tr>
-                        <td><%= item.name_en %> / <%= item.name_other %></td>
-                        <td><%= item.description_en %></td>
-                        <td>
-                            <img src="<%= item.images[0] %>" width="50">
-                            <img src="<%= item.images[1] %>" width="50">
-                            <img src="<%= item.images[2] %>" width="50">
-                        </td>
-                        <td>
-                            <form action="/admin/items/edit/<%= item._id %>" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-warning">Edit</button>
-                            </form>
-                            <form action="/admin/items/delete/<%= item._id %>" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-danger">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                <% }); %>
-            </tbody>
-        </table>
-    </section>
+            <% }); %>
+        </tbody>
+    </table>
+
 </div>
 
 <!-- Update Password Modal -->
@@ -138,48 +138,33 @@
     </div>
 </div>
 
-<!-- Styles -->
 <style>
-    .modal {
-        display: none;
-        position: fixed;
-        top: 50%; left: 50%;
+    .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+             background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
+    .modal { 
+        display: none; 
+        position: fixed; 
+        top: 50%; left: 50%; 
         transform: translate(-50%, -50%);
-        background: white; padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        background: white; padding: 20px; 
+        border-radius: 10px; 
+        box-shadow: 0 0 10px rgba(0,0,0,0.3); 
     }
     .modal-content { text-align: center; }
     .close { cursor: pointer; float: right; font-size: 20px; }
 </style>
-
-<!-- JavaScript -->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const updateButtons = document.querySelectorAll(".update-password-btn");
-    const modal = document.getElementById("updatePasswordModal");
-    const closeModal = document.querySelector(".close");
-    const confirmButton = document.getElementById("confirmUpdatePassword");
-    let selectedUserId = null;
-
-    updateButtons.forEach(button => {
-        button.addEventListener("click", function () {
-            selectedUserId = this.getAttribute("data-userid");
-            modal.style.display = "block";
-        });
-    });
-
-    closeModal.addEventListener("click", () => {
-        modal.style.display = "none";
-    });
-
-    confirmButton.addEventListener("click", async () => {
-        const newPassword = document.getElementById("newPasswordInput").value;
-        if (!newPassword || newPassword.length < 6) {
-            alert("Password must be at least 6 characters long!");
-            return;
+@@ -181,15 +188,16 @@
+            if (response.ok) {
+                alert("Password updated successfully!");
+                modal.style.display = "none";
+                document.getElementById("newPasswordInput").value = ""; // Clear input after update
+                location.reload();
+            } else {
+                alert("Error updating password.");
+            }
+        } catch (error) {
+            console.error("❌ Password Update Error:", error);
         }
-        location.reload();
     });
 });
 </script>
