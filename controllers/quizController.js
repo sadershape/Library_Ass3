@@ -4,10 +4,10 @@ const Quiz = require("../models/Quiz"); // Adjust the path to your Quiz model
 exports.getQuizQuestions = async (req, res) => {
     try {
         const questions = await Quiz.aggregate([{ $sample: { size: 5 } }]); // Randomize questions
-        res.json(questions);
+        res.render("quiz", { questions, user: req.session.user }); // Render quiz.ejs with questions and user data
     } catch (error) {
         console.error("Error fetching quiz questions:", error);
-        res.status(500).json({ error: "Error fetching quiz questions" });
+        res.status(500).render("error", { message: "Error fetching quiz questions" });
     }
 };
 
