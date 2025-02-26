@@ -43,24 +43,10 @@ router.post("/submit", async (req, res) => {
             $push: { quizResults: quizResult }
         });
 
-        res.redirect("/quiz/result");
+        res.redirect("/user/profile"); // Redirect to the user profile page
     } catch (error) {
         console.error("❌ Error submitting quiz:", error);
         res.status(500).render("error", { message: "Failed to submit quiz." });
-    }
-});
-
-// Route to get quiz results
-router.get("/result", async (req, res) => {
-    try {
-        const user = await User.findById(req.session.user._id).lean();
-        if (!user) {
-            throw new Error("User not found.");
-        }
-        res.render("quizResult", { results: user.quizResults, user: req.session.user });
-    } catch (error) {
-        console.error("❌ Error fetching quiz results:", error);
-        res.status(500).render("error", { message: "Failed to load quiz results." });
     }
 });
 
