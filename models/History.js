@@ -9,4 +9,4 @@ const HistorySchema = new mongoose.Schema({
 });
 
 const History = mongoose.model("History", HistorySchema);
-export default History;
+module.exports = History;
