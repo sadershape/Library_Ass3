@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Quiz</title>
-    <link rel="stylesheet" href="/css/styles.css"> <!-- Link to your CSS file -->
+    <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <%- include("navbar") %> <!-- Include the navbar partial -->
+    <%- include("navbar") %>
 
     <div class="container text-center">
         <h1>Quiz</h1>
@@ -30,11 +30,11 @@
         </form>
     </div>
 
-    <%- include("footer") %> <!-- Include the footer partial -->
+    <%- include("footer") %>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const timeLimit = 60; // Time limit in seconds
+            const timeLimit = 60;
             let timeLeft = timeLimit;
             const timerElement = document.getElementById("timer");
 
