@@ -11,14 +11,6 @@ const Item = require("./models/Item");
 
 const app = express();
 
-// ✅ Connect to MongoDB
-connectDB()
-    .then(() => {
-        console.log("✅ MongoDB Connected");
-        createAdminUser(); // Ensure admin exists when DB connects
-    })
-    .catch(err => console.error("❌ MongoDB Connection Error:", err));
-
 // ✅ Function to Create a Hardcoded Admin User
 const createAdminUser = async () => {
     try {
@@ -37,6 +29,21 @@ const createAdminUser = async () => {
         }
     } catch (error) {
         console.error("❌ Error creating admin user:", error);
+    }
+};
+
+// ✅ Start Server with DB Connection
+const startServer = async () => {
+    try {
+        await connectDB();
+        console.log("✅ MongoDB Connected");
+        await createAdminUser();
+
+        const PORT = process.env.PORT || 3000;
+        app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+    } catch (error) {
+        console.error("❌ MongoDB Connection Error:", error);
+        process.exit(1);
     }
 };
 
@@ -70,7 +77,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// ✅ Custom Flash Message Middleware (Replacing express-flash)
+// ✅ Custom Flash Message Middleware
 app.use((req, res, next) => {
     res.locals.success = req.session.success || null;
     res.locals.error = req.session.error || null;
@@ -106,18 +113,17 @@ app.get("/", async (req, res) => {
     }
 });
 
-// ✅ 404 Error Handling for Unrecognized Routes
+// ✅ 404 Error Handling
 app.use((req, res) => {
     console.error(`❌ 404 Not Found: ${req.originalUrl}`);
     res.status(404).json({ error: `404 Not Found: ${req.originalUrl}` });
 });
 
-// ✅ Debugging: Show Full Errors Instead of Generic Message
+// ✅ Debugging Middleware for Errors
 app.use((err, req, res, next) => {
     console.error("❌ ERROR:", err.stack);
     res.status(500).json({ error: "Internal Server Error", details: err.message });
 });
 
-// ✅ Start Server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+// ✅ Start the Server
+startServer();
