@@ -17,13 +17,42 @@
 body {
     font-family: 'Inter', sans-serif;
     background-color: #581515; /* Установлен фон на #581515 */
-    color: #581515;
+    color: #ffffff; /* Белый текст по умолчанию для контраста */
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+}
+
+/* === Text Colors for Different Sections === */
+h1, h2, p {
+    color: #ffffff; /* Белый цвет текста на красном фоне */
+}
+
+/* === About Section Text === */
+.about-section h2,
+.about-section p {
+    color: #ffffff; /* Белый текст в секции About */
+}
+
+/* === Buttons === */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #000000; /* Черные кнопки */
+    color: #ffffff; /* Белый текст на кнопках */
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: bold;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn:hover {
+    background: #333333; /* Темный оттенок для кнопок при наведении */
+    transform: scale(1.1);
 }
 
 /* === Glassmorphism Container === */
@@ -66,52 +95,6 @@ body {
     transform: scale(1.05);
 }
 
-/* === Buttons === */
-.btn {
-    display: inline-block;
-    padding: 12px 24px;
-    background: var(--primary-color);
-    color: #ffffff;
-    border: none;
-    border-radius: var(--border-radius);
-    font-weight: bold;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.btn:hover {
-    background: #ff4f4f;
-    transform: scale(1.1);
-}
-
-/* === Book Cards === */
-.book-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-}
-
-.book-card {
-    width: 300px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    padding: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    text-align: center;
-    transition: var(--transition);
-}
-
-.book-card:hover {
-    transform: scale(1.05);
-}
-
-.book-card img {
-    max-width: 100%;
-    border-radius: 8px;
-}
-
 /* === Responsive Design === */
 @media (max-width: 768px) {
     .navbar {
@@ -128,6 +111,7 @@ body {
         align-items: center;
     }
 }
+
  /* === About Section === */
 .about-section {
     margin: 40px 0;
@@ -159,14 +143,3 @@ body {
     line-height: 1.6;
 }
 
-/* === Responsive Design === */
-@media (max-width: 768px) {
-    .about-section .row {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .about-section img {
-        margin-bottom: 20px;
-    }
-}
